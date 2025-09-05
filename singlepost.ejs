@@ -4,10 +4,170 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>W chat</title>
-        <link rel="stylesheet" type="text/css" href="https://raw.githubusercontent.com/EhogGawlic/w-chat/refs/heads/main/public/styles.css">
+        <style>*{
+    font-family: 'Comic Sans MS', 'Comic Sans', cursive;
+}
+.box {
+    position: absolute;
+    border: 5px solid black;
+    margin: 0px;
+    border-radius: 10px;
+    background-color: gray;
+}
+#topbox {
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+    width: 100%-24px;
+    font-size:70px;
+}
+button {
+    border: 3px solid black;
+    margin: 10px;
+    border-radius: 5px;
+    background-color: lightgray;
+    cursor: pointer;
+}
+button:hover {
+    background-color: rgb(234, 234, 234);
+}
+#topbox button {
+    position: absolute;
+    margin: 10px;
+    top: 0px;
+    height: 80px;
+    width: 200px;
+    font-size: 30px;
+}
+#post {
+    position: fixed;
+    right: 45%;
+    left: 45%;
+    bottom: 10px;
+    font-size: 50px;
+}
+#chatj {
+    right: 220px;
+}
+#si {
+    right: 10px;
+}
+
+#leftbox {
+    top: 120px;
+    bottom: 10px;
+    left: 0;
+    right: 50%;
+    overflow-y: scroll;
+}
+#rightbox {
+    top: 120px;
+    bottom: 10px;
+    right: 0;
+    left: 50%;
+    overflow-y: scroll;
+}
+#middlebox {
+    top: 120px;
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    overflow-y: scroll;
+}
+.post {
+    border: 5px solid black;
+    border-radius: 10px;
+    background-color: lightgray;
+    margin: 10px;
+    padding: 10px;
+    font-size: 20px;
+}
+form input {
+    border: 3px solid black;
+    border-radius: 5px;
+    background-color: lightgray;
+    font-size: 20px;
+}
+form button {
+    border: 3px solid black;
+    border-radius: 5px;
+    background-color: lightgray;
+    font-size: 20px;
+    margin: 0;
+    cursor: pointer;
+}
+.red {
+    color: red;
+}
+.hidden {
+    display: none;
+}
+#bigpost {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 5px solid black;
+    border-radius: 10px;
+    background-color: lightgray;
+    margin: 10px;
+    padding: 10px;
+    font-size: 20px;
+}
+.tmessage {
+    border: 5px solid black;
+    border-radius: 10px;
+    background-color: rgb(38, 0, 255);
+    margin: 10px;
+    padding: 10px;
+    font-size: 16px;
+    right:0;
+}
+.omessage {
+    border: 5px solid black;
+    border-radius: 10px;
+    background-color: rgb(187, 187, 187);
+    margin: 10px;
+    padding: 10px;
+    font-size: 16px;
+    left:0;
+}
+.contact {
+    border: 5px solid black;
+    border-radius: 20px;
+    background-color: lightgray;
+    margin: 2.5px;
+    font-size: 20px;
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    
+    cursor: pointer;
+}
+#contacts {
+    margin: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 50px;
+    overflow-y: scroll;
+}
+#messages {
+    margin: 0;
+    position: absolute;
+    top: 0;
+    left: 50px;
+    right: 0;
+    bottom: 0px;
+    overflow-y: scroll;
+}</style>
         <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/EhogGawlic/w-chat/refs/heads/main/public/favicon.png">
     </head>
     <body>
         <%- post %>
     </body>
+
 </html>
