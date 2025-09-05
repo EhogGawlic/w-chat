@@ -150,7 +150,8 @@ app.post('/signedup', async (req, res) => {
         email: email,
         password: hash,
         dname: username,
-        status: ""
+        status: "",
+		contacts:[]
     }
     const result = await addData('users', user)
     res.cookie('token', await generateAccessToken(username), {httpOnly: true,maxAge: 1800 * 1000 })
@@ -232,3 +233,4 @@ app.set('views', __dirname)
 app.listen(port, () => {
   console.log(`App listening on port ${port}`)
 })//
+
