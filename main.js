@@ -100,7 +100,7 @@ app.get('/', async (req, res) => {
     const posts = await getAllData('posts')
     const tusr = user?await getOneData('users', {username: user.username}):null
 	if (tusr && tusr.contacts){
-    const cntcts = tusr?tusr.contacts:[].toArray()
+    const cntcts = tusr?tusr.contacts:[]
 	    console.log(cntcts)
 	    cntcts.forEach(c => {
 	        console.log(c)
@@ -235,6 +235,7 @@ app.set('views', __dirname)
 app.listen(port, () => {
   console.log(`App listening on port ${port}`)
 })//
+
 
 
 
