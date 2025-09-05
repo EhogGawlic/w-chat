@@ -1,0 +1,28 @@
+{
+  "name": "w-chat",
+  "version": "1.0.0",
+  "description": "W Chat!",
+  "main": "main.js",
+  "scripts": {
+    "test": "node main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "w-chat"
+  },
+  "keywords": [
+    "chat"
+  ],
+  "author": "Ethan",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "body-parser": "^2.2.0",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^17.2.2",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.19.0"
+  }
+}

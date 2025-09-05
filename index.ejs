@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>W chat</title>
+        <link rel="stylesheet" href="public/styles.css">
+        <link rel="icon" href="public/favicon.png">
+    </head>
+    <body>
+        <div class = "box" id="topbox">W CHAT <button id="chatj" style="height: 80px;">Join chat</button><button id="si" style="height: 80px;">Sign in</button></div>
+        <div class = "box" id="leftbox"> <span id="usr" style="display: none;">Logged in as <%= usr %></span>
+            <%- posts %>
+        </div>
+        <div class = "box" id="rightbox"> 
+            <!--messages (private)-->
+            <!--tabs for groups/people-->
+            
+            <div class="box" id="contacts">
+                igno<br>re<br>this<br>is<br>a<br>work<br>in<br>prog<br>ress<br><br>
+                <%- contacts %>
+            </div>
+            <div class="box" id="messages">
+
+            </div>
+         </div><button id="post" style="height: 80px;display: none;">+</button>
+        <script>
+            document.getElementsByClassName("contact").onclick = function() {
+                const messages = fetch('/messages', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({contact: this.id})
+                }).then(res => res.text()).then(data => {
+                    document.getElementById("messages").innerHTML = data
+                });
+            };
+            document.getElementById("chatj").onclick = function() {
+                window.location.href = "/chatjoin";
+            };
+            document.getElementById("si").onclick = function() {
+                window.location.href = "/signin";
+            };
+            if (<%= loggedin %>) {
+                document.getElementById("post").style.display = "block";
+                document.getElementById("usr").style.display = "block";
+            }
+            document.getElementById("post").onclick = function() {
+                window.location.href = "/post";
+            };
+            document.querySelectorAll('.post').forEach(post => {
+                post.style.cursor = 'pointer';
+                    const id = parseInt(post.id);
+                    console.log("id"+id)
+                post.onclick = function() {
+                    console.log( `/post:id=${id}`)
+                    window.location.href = `/post:id=${id}`;
+
+                };
+            });
+        </script>
+    </body>
+</html>
