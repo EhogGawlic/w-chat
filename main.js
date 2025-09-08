@@ -242,6 +242,7 @@ app.get('/user:name=:name', async (req, res) => {
     const data =  `
     <div id="bigpost">
         <h2>${user.dname}</h2>
+		<h3>${user.username}</h3>
         <p>${user.status}</p>
         <form action="/ban" method="post">
             <input type="number" class="hidden" name="username" value="${name}">
@@ -257,9 +258,9 @@ app.post('/ban', async(req, res)=>{
 	}
 	const username = req.body.username
 	const user = await getOneData("users", {username})
-	if (!user){
-		res.send("Invalid user")
-	}
+	//if (!user){
+	//	res.send("Invalid user")
+	//}
 	console.log(user)
 	const cookieToken = await verifyToken(req.cookies.token)
 	const tuser = await getOneData("users", {username:cookieToken.username})
@@ -283,6 +284,7 @@ app.set('views', __dirname)
 app.listen(port, () => {
   console.log(`App listening on port ${port}`)
 })//
+
 
 
 
