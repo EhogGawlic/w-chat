@@ -257,7 +257,7 @@ app.post('/ban', async(req, res)=>{
 	}
 	const username = req.body.username
 	const user = await getOneData("users", {username})
-	const cookieToken = await verifyToken(req.cookies.token)
+	const cookieToken = await verifyToken(req.cookies.token).username
 	const tuser = await getOneData("users", {username:cookieToken})
 	if (!tuser){
 		res.send("You are not logged in")
@@ -279,6 +279,7 @@ app.set('views', __dirname)
 app.listen(port, () => {
   console.log(`App listening on port ${port}`)
 })//
+
 
 
 
