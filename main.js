@@ -268,7 +268,7 @@ app.post('/ban', async(req, res)=>{
 	if (user.status == '<span class="red">[MOD]</span>'){
 		res.send("You can not ban mods.")
 	}
-	updateOne('users', {username:user.username}, {status: '(Banned)'})
+	updateOne('users', {username}, {status: '(Banned)'})
 	res.send('yay')
 })
 app.engine('html', require('ejs').renderFile)
@@ -279,6 +279,7 @@ app.set('views', __dirname)
 app.listen(port, () => {
   console.log(`App listening on port ${port}`)
 })//
+
 
 
 
