@@ -257,6 +257,10 @@ app.post('/ban', async(req, res)=>{
 	}
 	const username = req.body.username
 	const user = await getOneData("users", {username})
+	if (!user){
+		res.send("Invalid user")
+	}
+	console.log(user)
 	const cookieToken = await verifyToken(req.cookies.token)
 	const tuser = await getOneData("users", {username:cookieToken.username})
 	if (!tuser){
@@ -279,6 +283,7 @@ app.set('views', __dirname)
 app.listen(port, () => {
   console.log(`App listening on port ${port}`)
 })//
+
 
 
 
