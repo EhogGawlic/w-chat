@@ -33,11 +33,20 @@ function formatData(post,i){
         <h2>${post.title}</h2>
         <p>by ${post.author.dname} ${post.author.status}</p><br>
         <p>${post.content}</p>
-		<p>${post.replies ? "Has replies" : "<form action='/reply:post="+i+"><button type='submit'>Reply</button></form>"}</p>
+		<p>${post.replies ? "Has replies" : `<form action='/reply:post='${i}'><button type='submit'>Reply</button></form>`}</p>
     </div>
     `
 }
-
+function formatReplies(replies){
+    let formatted = '<div class="replies"><h3>Replies:</h3>'
+    replies.forEach(reply => {
+        formatted += `
+        <div class="reply">
+            <p><strong>${reply.author.dname} ${reply.author.status}</strong></p>
+            <p>${reply.content}</p>
+        </div<br>`
+    })
+}
 async function getAllData(collection){
     const db = client.db('wchat')
     const coll = db.collection(collection)
@@ -113,11 +122,9 @@ app.get('/', async (req, res) => {
 	        contacts += `<p class="contact">${c.charAt(0)}</p><br>`
 	    })
 	}
-    let i = 0
-    posts.forEach(post => {
-        postAll += formatData(post,i)+"<br>"
-        i++
-    })
+    for (let i = posts.length - 1; i >= 0; i--) {
+        postAll += formatData(posts[i],i)+"<br>"
+    }
     res.render('index', {posts: postAll, loggedin: user?true:false, usr: user?user.username:null,contacts})
 })
 app.get('/chatjoin', (req, res) => {
@@ -225,6 +232,7 @@ app.get('/post:id=:id', async (req, res) => {
         <h2>${post.title}</h2>
         <p>by ${post.author.dname} ${post.author.status}</p><br>
         <p>${post.content}</p>
+        <p>${post.replies ? formatReplies(post.replies) : ""}<form action='/reply:post="${id}"><button type='submit'>Reply</button></form></p>
         <form action="/delete" method="post">
             <input type="number" class="hidden" name="i" value="${id}">
             <button type="submit">Delete post (only if this is your post or you're a moderator)</button>
@@ -274,8 +282,49 @@ app.post('/ban', async(req, res)=>{
 	if (user.status == '<span class="red">[MOD]</span>'){
 		res.send("You can not ban mods.")
 	}
-	updateOne('users', {username}, {status: '(Banned)'})
+	updateData('users', {username}, {status: '(Banned)'})
 	res.send('yay')
+})
+app.get('/reply:post=":id"', async (req, res) => {
+    res.render('reply', {id: req.params.id})
+})
+app.post('/replied', async (req, res) => {
+    if(!req.cookies.token){
+        res.send("no bad boi<button onclick='history.back()'>Go Back</button>")
+    }
+    const user = await verifyToken(req.cookies.token)
+    if(!user){
+        res.send("no bad boi<button onclick='history.back()'>Go Back</button>")
+    }
+    const usr = await getOneData('users', {username: user.username})
+    if(!usr){
+        res.send("no bad boi<button onclick='history.back()'>Go Back</button>")
+    }
+    const posts = await getAllData('posts')
+    const post = posts[req.body.id]
+    if(!post){
+        res.send("Wait, how did you find this <button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    if (!post.replies) {
+        updateData("posts", {_id: post._id}, {replies: []})
+    }
+    const reply = {
+        content: req.body.content,
+        title: req.body.title,
+        
+        author: {
+            dname: usr.dname,
+            status: usr.status,
+            username: usr.username
+        }
+    }
+    post.replies.push(reply)
+    updateData("posts", {_id: post._id}, {replies: post.replies})
+    res.redirect('/post:id='+req.body.id)
+})
+app.get('/terms', (req, res) => {
+    res.render('terms')
 })
 app.engine('html', require('ejs').renderFile)
 app.set('view engine', 'ejs')
