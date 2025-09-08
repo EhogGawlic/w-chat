@@ -61,6 +61,11 @@ async function deleteData(collection, query){
     const result = await coll.deleteOne(query)
     
 }
+async function updateData(collection, query, data){
+	const db = client.db('wchat')
+	const coll = db.collection(collection)
+	const result = coll.updateOne(query, {$set: data})
+}
 async function encryptPassword(password){
     const saltRounds = 10;
     const bcrypt = require('bcrypt');
@@ -227,6 +232,45 @@ app.get('/post:id=:id', async (req, res) => {
     `
     res.render('singlepost', {post: data})
 })
+app.get('/user:name=:name', async (req, res) => {
+    const name = req.params.name
+    const user = await getOneData("users", {username:name})
+    if(!user){
+        res.send("Invalid user <button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    const data =  `
+    <div id="bigpost">
+        <h2>${user.dname}</h2>
+        <p>${user.status}</p>
+        <form action="/ban" method="post">
+            <input type="number" class="hidden" name="username" value="${name}">
+            <button type="submit">Ban user (only if you're a moderator)</button>
+        </form>
+    </div>
+    `
+    res.render('singlepost', {post: data})
+})
+app.post('/ban', async(req, res)=>{
+	if (!req.cookies.token){
+		res.send("You are not logged in")
+	}
+	const username = req.body.username
+	const user = await getOneData("users", {username})
+	const cookieToken = await verifyToken(req.cookies.token)
+	const tuser = await getOneData("users", {username:cookieToken})
+	if (!tuser){
+		res.send("You are not logged in")
+	}
+	if (tuser.status != '<span class="red">[MOD]</span>'){
+		res.send("You are not authorized to ban people")
+	}
+	if (user.status == '<span class="red">[MOD]</span>'){
+		res.send("You can not ban mods.")
+	}
+	updateOne('users', {username:user.username}, {status: '(Banned)'})
+	res.send('yay')
+})
 app.engine('html', require('ejs').renderFile)
 app.set('view engine', 'ejs')
 app.set('views', __dirname)
@@ -235,6 +279,7 @@ app.set('views', __dirname)
 app.listen(port, () => {
   console.log(`App listening on port ${port}`)
 })//
+
 
 
 
