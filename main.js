@@ -33,6 +33,7 @@ function formatData(post,i){
         <h2>${post.title}</h2>
         <p>by ${post.author.dname} ${post.author.status}</p><br>
         <p>${post.content}</p>
+		<p>${post.replies ? "Has replies" | "<form action='/reply:post=${i}><button type='submit'>Reply</button></form>}</p>
     </div>
     `
 }
@@ -284,6 +285,7 @@ app.set('views', __dirname)
 app.listen(port, () => {
   console.log(`App listening on port ${port}`)
 })//
+
 
 
 
