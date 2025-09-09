@@ -116,7 +116,7 @@ app.get('/', async (req, res) => {
 	for (let i = posts.length-1; i >=0; i--){
         postAll += formatData(posts[i],i)+"<br>"
         
-    })
+    }
     res.render('index', {posts: postAll, loggedin: user?true:false, usr: user?user.username:null,contacts})
 })
 app.get('/chatjoin', (req, res) => {
@@ -284,6 +284,7 @@ app.set('views', __dirname)
 app.listen(port, () => {
   console.log(`App listening on port ${port}`)
 })//
+
 
 
 
