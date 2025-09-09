@@ -113,10 +113,9 @@ app.get('/', async (req, res) => {
 	        contacts += `<p class="contact">${c.charAt(0)}</p><br>`
 	    })
 	}
-    let i = 0
-    posts.forEach(post => {
-        postAll += formatData(post,i)+"<br>"
-        i++
+	for (let i = posts.length-1; i >=0; i--){
+        postAll += formatData(posts[i],i)+"<br>"
+        
     })
     res.render('index', {posts: postAll, loggedin: user?true:false, usr: user?user.username:null,contacts})
 })
@@ -285,6 +284,7 @@ app.set('views', __dirname)
 app.listen(port, () => {
   console.log(`App listening on port ${port}`)
 })//
+
 
 
 
