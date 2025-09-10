@@ -149,6 +149,10 @@ app.post('/signedin', async (req, res) => {
         res.send("Incorrect password<button onclick='history.back()'>Go Back</button>")
         return
     }
+    if (usr.status == "(Banned)"){
+        res.send("You are banned from this site :( <button onclick='history.back()'>Go Back</button>")
+        return
+    }
     res.cookie('token', await generateAccessToken(username), {httpOnly: true,maxAge: 1800 * 1000 })
     res.redirect('/')
 })
@@ -257,7 +261,7 @@ app.get('/user:name=:name', async (req, res) => {
 		<h3>${user.username}</h3>
         <p>${user.status}</p>
         <form action="/ban" method="post">
-            <input type="number" class="hidden" name="username" value="${name}">
+            <input type="text" class="hidden" name="username" value="${user.username}">
             <button type="submit">Ban user (only if you're a moderator)</button>
         </form>
     </div>
@@ -268,7 +272,9 @@ app.post('/ban', async(req, res)=>{
 	if (!req.cookies.token){
 		res.send("You are not logged in")
 	}
+    console.log(req.body)
 	const username = req.body.username
+    console.log(username)
 	const user = await getOneData("users", {username})
 	//if (!user){
 	//	res.send("Invalid user")
