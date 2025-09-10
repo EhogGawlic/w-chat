@@ -33,19 +33,22 @@ function formatData(post,i){
         <h2>${post.title}</h2>
         <p>by ${post.author.dname} ${post.author.status}</p><br>
         <p>${post.content}</p>
-		<p>${post.replies ? "Has replies" : `<form action='/reply:post='${i}'><button type='submit'>Reply</button></form>`}</p>
+		<p>${post.replies ? "Has replies" : ""}</p>
     </div>
     `
 }
 function formatReplies(replies){
     let formatted = '<div class="replies"><h3>Replies:</h3>'
     replies.forEach(reply => {
+        console.log(reply)
         formatted += `
         <div class="reply">
-            <p><strong>${reply.author.dname} ${reply.author.status}</strong></p>
+            <b>${reply.title}</b><br>
+            <b>${reply.author.dname} ${reply.author.status}</b><br>
             <p>${reply.content}</p>
         </div<br>`
     })
+    return formatted + '</div>'
 }
 async function getAllData(collection){
     const db = client.db('wchat')
@@ -232,7 +235,7 @@ app.get('/post:id=:id', async (req, res) => {
         <h2>${post.title}</h2>
         <p>by ${post.author.dname} ${post.author.status}</p><br>
         <p>${post.content}</p>
-        <p>${post.replies ? formatReplies(post.replies) : ""}<form action='/reply:post="${id}"><button type='submit'>Reply</button></form></p>
+        <p>${post.replies ? formatReplies(post.replies) : ""}<button onclick="window.location='/reply:post=${id}'">Reply</button></p>
         <form action="/delete" method="post">
             <input type="number" class="hidden" name="i" value="${id}">
             <button type="submit">Delete post (only if this is your post or you're a moderator)</button>
@@ -285,7 +288,7 @@ app.post('/ban', async(req, res)=>{
 	updateData('users', {username}, {status: '(Banned)'})
 	res.send('yay')
 })
-app.get('/reply:post=":id"', async (req, res) => {
+app.get('/reply:post=:id', async (req, res) => {
     res.render('reply', {id: req.params.id})
 })
 app.post('/replied', async (req, res) => {
@@ -309,6 +312,7 @@ app.post('/replied', async (req, res) => {
     if (!post.replies) {
         updateData("posts", {_id: post._id}, {replies: []})
     }
+    post.replies = post.replies ? post.replies : []
     const reply = {
         content: req.body.content,
         title: req.body.title,
@@ -319,8 +323,9 @@ app.post('/replied', async (req, res) => {
             username: usr.username
         }
     }
+    console.log(post.replies)
     post.replies.push(reply)
-    updateData("posts", {_id: post._id}, {replies: post.replies})
+    await updateData("posts", {_id: post._id}, {replies: post.replies})
     res.redirect('/post:id='+req.body.id)
 })
 app.get('/terms', (req, res) => {
