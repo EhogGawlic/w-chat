@@ -46,7 +46,7 @@ function formatReplies(replies){
             <b>${reply.title}</b><br>
             <b>${reply.author.dname} ${reply.author.status}</b><br>
             <p>${reply.content}</p>
-        </div<br>`
+        </div><br>`
     })
     return formatted + '</div>'
 }
@@ -345,6 +345,7 @@ app.set('views', __dirname)
 app.listen(port, () => {
   console.log(`App listening on port ${port}`)
 })//
+
 
 
 
