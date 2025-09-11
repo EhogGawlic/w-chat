@@ -288,13 +288,13 @@ app.get('/user:name=:name', async (req, res) => {
 	 <form action="/changedname" method="post">
 	        <h2><input value="${user.dname}" type="text"name="dname"></h2>
 		 
-	            <input type="text" class="hidden" name="username" value="${user.username}">
+	            <input type="text" class="hidden" name="username" value='${user.username}'>
 		 	<button type="submit">Change</button><br>
 		 </form>
 			<h3>${user.username}</h3>
 	        <p>${user.status}</p>
 	        <form action="/ban" method="post">
-	            <input type="text" class="hidden" name="username" value="${user.username}">
+	            <input type="text" class="hidden" name="username" value='${user.username}'>
 	            <button type="submit">Ban user (only if you're a moderator)</button>
 	        </form>
 	    </div>
@@ -541,6 +541,7 @@ app.set('views', __dirname)
 app.listen(port, () => {
   console.log(`App listening on port ${port}`)
 })//
+
 
 
 
