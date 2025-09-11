@@ -396,6 +396,116 @@ app.post('/replied', async (req, res) => {
 app.get('/terms', (req, res) => {
     res.render('terms')
 })
+app.get('/admin', async (req, res) => {
+    if (!req.cookies.token) {
+        res.send("You are not logged in <button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    const token = await verifyToken(req.cookies.token)
+    if (!token) {
+        res.send("Expired login <button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    const user = await getOneData('users', {username: token.username})
+    if (!user) {
+        res.send("You are not logged in <button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    if (user.username != "ehogin"){
+        res.send("You are not authorized to view this page <button onclick='history.back()'>Go Back</button>")
+    }
+    const users = await getAllData('users')
+    const usrlist = users.map(u => {
+        return `<p><form action='/admin' method='post'>${u.dname} (<input type="text" value='${u.username}' name="username">) - ${u.status} <button type="submit">Promote</button></form></p>`
+    })
+    res.render('admin', {users: usrlist.join('')})
+})
+app.get('/admin/um', async (req, res) => {
+    if (!req.cookies.token) {
+        res.send("You are not logged in <button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    const token = await verifyToken(req.cookies.token)
+    if (!token) {
+        res.send("Expired login <button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    const user = await getOneData('users', {username: token.username})
+    if (!user) {
+        res.send("You are not logged in <button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    if (user.username != "ehogin"){
+        res.send("You are not authorized to view this page <button onclick='history.back()'>Go Back</button>")
+    }
+    const users = await getAllData('users')
+    const usrlist = users.map(u => {
+        return `<p><form action='/admin/um' method='post'>${u.dname} (<input type="text" value='${u.username}' name="username">) - ${u.status} <button type="submit">un-Promote</button></form></p>`
+    })
+    res.render('admin', {users: usrlist.join('')})
+})
+app.post('/admin', async (req, res) => {
+    if (!req.cookies.token) {
+        res.send("You are not logged in <button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    const token = await verifyToken(req.cookies.token)
+    if (!token) {
+        res.send("Expired login <button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    const tuser = await getOneData('users', {username: token.username})
+    if (!tuser) {
+        res.send("You are not logged in <button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    if (tuser.username != "ehogin"){
+        res.send("You are not authorized to view this page <button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    const user = await getOneData('users', {username: req.body.username})
+    if (!user) {
+        res.send("User not found <button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    if (user.status == '<span class="red">[MOD]</span>') {
+        res.send("User is already a moderator <button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    await updateData('users', {username: req.body.username}, {status: '<span class="red">[MOD]</span>'})
+    res.redirect('/admin')
+})
+app.post('/admin/um', async (req, res) => {
+    if (!req.cookies.token) {
+        res.send("You are not logged in <button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    const token = await verifyToken(req.cookies.token)
+    if (!token) {
+        res.send("Expired login <button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    const tuser = await getOneData('users', {username: token.username})
+    if (!tuser) {
+        res.send("You are not logged in <button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    if (tuser.username != "ehogin"){
+        res.send("You are not authorized to view this page <button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    const user = await getOneData('users', {username: req.body.username})
+    if (!user) {
+        res.send("User not found <button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    if (user.status == '') {
+        res.send("User is already sad <button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    await updateData('users', {username: req.body.username}, {status: ''})
+    res.redirect('/admin')
+})
 app.engine('html', require('ejs').renderFile)
 app.set('view engine', 'ejs')
 app.set('views', __dirname)
