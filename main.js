@@ -194,6 +194,10 @@ app.post('/posted', async (req, res) => {
     if(!usr){
         res.send("no bad boi<button onclick='history.back()'>Go Back</button>")
     }
+    if (req.body.content.includes("<iframe")){
+        res.send('Cannot include iframes because that crashes it for some reason :( <button onclick="history.back()">Go Back</button>')
+        return
+    }
     await addData('posts', {
         title: req.body.title,
         content: req.body.content,

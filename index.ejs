@@ -168,7 +168,7 @@ form button {
     </head>
     <body>
         <div class = "box" id="topbox">W CHAT <button id="chatj" style="height: 80px;">Join chat</button><button id="si" style="height: 80px;">Sign in</button></div>
-        <div class = "box" id="leftbox"> <span id="usr" style="display: none;">Logged in as <%= usr %></span>
+        <div class = "box" id="leftbox"> <span id="usr" style="display: none;">Logged in as <%= usr %> <button onclick="window.location = '/user:name=<%= usr %>'">Go to user page</button></span>
             <%- posts %>
         </div>
         <div class = "box" id="rightbox"> 
