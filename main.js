@@ -320,7 +320,7 @@ app.post('/changedname', async(req,res)=>{
 	user.dname = req.body.dname
 	
     
-	await updateData('users', {req.body.username}, {dname:user.dname})
+	await updateData('users', {username:req.body.username}, {dname:user.dname})
 	res.redirect("/")
 })
 app.post('/ban', async(req, res)=>{
@@ -400,6 +400,7 @@ app.set('views', __dirname)
 app.listen(port, () => {
   console.log(`App listening on port ${port}`)
 })//
+
 
 
 
