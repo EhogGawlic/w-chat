@@ -172,7 +172,7 @@ form button {
                 <a href="/terms">Terms and conditions</a><br>
                 <form action="/posted" method="POST">
                 -Title-<br>
-                <input type="text" name="title" placeholder="Title" required><br>
+                <input type="text" name="title" placeholder="Title" required id = "title"><br>
                 <br>
                 
                 -Content-<br>
@@ -181,6 +181,23 @@ form button {
                 <button type="submit" style="height: 80px;">Post</button>
             </form>
         </div>
+        <div id="preview">Preview will show here</div>
+        <script>
+            const input = document.querySelector("textarea")
+            const preview = document.getElementById("preview")
+            const title = document.getElementById("title")    
+            input.onchange = ()=>{
+                const content = input.value
+                preview.innerHTML = `
+                <div class="post">
+                    <h2>${title.value}</h2>
+                    <p>by [Your display name]<br>
+                    <p>${content}</p>
+                </div>
+                `
+            }
+        </script>
     </body>
 
 </html>
+
