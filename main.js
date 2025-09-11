@@ -343,12 +343,15 @@ app.post('/ban', async(req, res)=>{
 	const tuser = await getOneData("users", {username:cookieToken.username})
 	if (!tuser){
 		res.send("You are not logged in")
+		return
 	}
 	if (tuser.status != '<span class="red">[MOD]</span>'){
-		res.send("You are not authorized to ban people")
+		res.send("You really though, huh?")
+		return
 	}
 	if (user.status == '<span class="red">[MOD]</span>'){
-		res.send("You can not ban mods.")
+		res.send("You really though, huh?")
+		return
 	}
 	updateData('users', {username}, {status: '(Banned)'})
 	res.send('yay')
@@ -538,6 +541,7 @@ app.set('views', __dirname)
 app.listen(port, () => {
   console.log(`App listening on port ${port}`)
 })//
+
 
 
 
