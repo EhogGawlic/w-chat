@@ -255,6 +255,49 @@ app.get('/user:name=:name', async (req, res) => {
         res.send("Invalid user <button onclick='history.back()'>Go Back</button>")
         return
     }
+	
+	const token = await validateToken(req.cookies.token)
+	if (token){
+		const tuser = await getOneData("users",{username:token.username})
+		if (!tuser){
+			res.send("eee")
+			return
+		}
+		if (tuser != user){
+			
+		    const data =  `
+		    <div id="bigpost">
+		        <h2>${user.dname}</h2>
+				<h3>${user.username}</h3>
+		        <p>${user.status}</p>
+		        <form action="/ban" method="post">
+		            <input type="text" class="hidden" name="username" value="${user.username}">
+		            <button type="submit">Ban user (only if you're a moderator)</button>
+		        </form>
+		    </div>
+		    `
+		    res.render('singlepost', {post: data})
+			return
+		}
+		const data =  `
+	    <div id="bigpost">
+	 <form action="/changedname" method="post">
+	        <h2><input value="${user.dname}" type="text"name="dname"></h2>
+		 
+	            <input type="text" class="hidden" name="username" value="${user.username}">
+		 	<button type="submit">Change</button><br>
+		 </form>
+			<h3>${user.username}</h3>
+	        <p>${user.status}</p>
+	        <form action="/ban" method="post">
+	            <input type="text" class="hidden" name="username" value="${user.username}">
+	            <button type="submit">Ban user (only if you're a moderator)</button>
+	        </form>
+	    </div>
+	    `
+	    res.render('singlepost', {post: data})
+		return
+	}
     const data =  `
     <div id="bigpost">
         <h2>${user.dname}</h2>
@@ -267,6 +310,18 @@ app.get('/user:name=:name', async (req, res) => {
     </div>
     `
     res.render('singlepost', {post: data})
+})
+app.post('/changedname', async(req,res)=>{
+	const user = await getOneData("users", {username:req.body.username})
+	if (!user){
+		res.send("No user found")
+		return
+	}
+	user.dname = req.body.dname
+	
+    
+	await updateData('users', {req.body.username}, {dname:user.dname})
+	res.redirect("/")
 })
 app.post('/ban', async(req, res)=>{
 	if (!req.cookies.token){
@@ -345,6 +400,7 @@ app.set('views', __dirname)
 app.listen(port, () => {
   console.log(`App listening on port ${port}`)
 })//
+
 
 
 
