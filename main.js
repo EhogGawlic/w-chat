@@ -263,7 +263,7 @@ app.get('/user:name=:name', async (req, res) => {
 			res.send("eee")
 			return
 		}
-		if (tuser != user){
+		if (tuser.username != user.username){
 			
 		    const data =  `
 		    <div id="bigpost">
@@ -400,6 +400,7 @@ app.set('views', __dirname)
 app.listen(port, () => {
   console.log(`App listening on port ${port}`)
 })//
+
 
 
 
