@@ -420,6 +420,30 @@ app.get('/admin', async (req, res) => {
     })
     res.render('admin', {users: usrlist.join('')})
 })
+app.get('/admin/ban', async (req, res) => {
+    if (!req.cookies.token) {
+        res.send("You are not logged in <button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    const token = await verifyToken(req.cookies.token)
+    if (!token) {
+        res.send("Expired login <button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    const user = await getOneData('users', {username: token.username})
+    if (!user) {
+        res.send("You are not logged in <button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    if (user.username != "ehogin"){
+        res.send("You are not authorized to view this page <button onclick='history.back()'>Go Back</button>")
+    }
+    const users = await getAllData('users')
+    const usrlist = users.map(u => {
+        return `<p><form action='/ban' method='post'>${u.dname} (<input type="text" value='${u.username}' name="username">) - ${u.status} <button type="submit">Ban</button></form></p>`
+    })
+    res.render('admin', {users: usrlist.join('')})
+})
 app.get('/admin/um', async (req, res) => {
     if (!req.cookies.token) {
         res.send("You are not logged in <button onclick='history.back()'>Go Back</button>")
