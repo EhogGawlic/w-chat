@@ -256,7 +256,7 @@ app.get('/user:name=:name', async (req, res) => {
         return
     }
 	
-	const token = await validateToken(req.cookies.token)
+	const token = await verifyToken(req.cookies.token)
 	if (token){
 		const tuser = await getOneData("users",{username:token.username})
 		if (!tuser){
@@ -400,6 +400,7 @@ app.set('views', __dirname)
 app.listen(port, () => {
   console.log(`App listening on port ${port}`)
 })//
+
 
 
 
