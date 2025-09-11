@@ -308,7 +308,7 @@ app.get('/user:name=:name', async (req, res) => {
 		<h3>${user.username}</h3>
         <p>${user.status}</p>
         <form action="/ban" method="post">
-            <input type="text" class="hidden" name="username" value="${user.username}">
+            <input type="text" class="hidden" name="username" value='${user.username}'>
             <button type="submit">Ban user (only if you're a moderator)</button>
         </form>
     </div>
