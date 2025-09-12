@@ -105,7 +105,8 @@ async function verifyToken(token){
 
 
 
-app.use(express.static(__dirname+ '\\'))
+
+app.use(express.json());
 app.use(bodyParser.urlencoded({extended: true}))
 
 app.get('/', async (req, res) => {
@@ -122,7 +123,7 @@ app.get('/', async (req, res) => {
 	    console.log(cntcts)
 	    cntcts.forEach(c => {
 	        console.log(c)
-	        contacts += `<p class="contact">${c.charAt(0)}</p><br>`
+	        contacts += `<p class="contact" id="contact${c}">${c.charAt(0)}</p><br>`
 	    })
 	}
     for (let i = posts.length - 1; i >= 0; i--) {
@@ -337,10 +338,34 @@ app.post('/replied', async (req, res) => {
 app.get('/terms', (req, res) => {
     res.render('terms')
 })
+app.post('/messages', async (req, res) => {
+     if(!req.cookies.token){
+        res.send("no bad boi<button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    const user = await verifyToken(req.cookies.token)
+    if(!user){
+        res.send("no bad boi<button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    console.log(req.body)
+    const contact = req.body.contact
+    const chat = await getOneData('chats', {name: contact, users: {$in: [user.username]}})
+    if(!chat){
+        res.send("No chat found")
+        return
+    }
+    let messages = ''
+    chat.messages.forEach(m => {
+        messages += `<p><b>${m.author}:</b> ${m.message}</p>`
+    })
+    res.send(messages)
+});
 app.engine('html', require('ejs').renderFile)
 app.set('view engine', 'ejs')
 app.set('views', __dirname)
 
+app.use(express.static(__dirname+ '\\'))
 
 app.listen(port, () => {
   console.log(`App listening on port ${port}`)

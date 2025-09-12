@@ -163,6 +163,18 @@ form button {
     right: 0;
     bottom: 0px;
     overflow-y: scroll;
+
+
+}
+
+#chatinp { 
+    position: absolute;
+    bottom: 0;
+    left: 50px;
+    right: 0;
+    height: 50px;
+    border-top: 3px solid black;
+    background-color: lightgray;
 }</style>
         <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/EhogGawlic/w-chat/refs/heads/main/public/favicon.png">
     </head>
@@ -182,17 +194,38 @@ form button {
             <div class="box" id="messages">
 
             </div>
+            <div id="chatinp">
+                <input type="text" id="chatinput" multiple placeholder="Type a message...">
+                <button id="chatsend">Send</button>
+            </div>
          </div><button id="post" style="height: 80px;display: none;">+</button>
         <script>
-            document.getElementsByClassName("contact").onclick = function() {
-                const messages = fetch('/messages', {
+            Array.from(document.getElementsByClassName("contact")).forEach(contact=>{
+            contact.onclick = function() {
+                fetch('/messages', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({contact: this.id})
+                    credentials: 'include',
+                    body: JSON.stringify({contact: this.id.slice(7)})
                 }).then(res => res.text()).then(data => {
                     document.getElementById("messages").innerHTML = data
+                });
+            }});
+            document.getElementById("chatsend").onclick = function() {
+                const message = document.getElementById("chatinput").value
+                if(message.trim() === '') return;
+                fetch('/sendmessage', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({message: message, contact: document.querySelector('.contact.selected')?.id.slice(7)})
+                }).then(res => res.text()).then(data => {
+                    document.getElementById("messages").innerHTML = data
+                    document.getElementById("chatinput").value = ''
                 });
             };
             document.getElementById("chatj").onclick = function() {
