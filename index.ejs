@@ -185,10 +185,10 @@ form button {
          </div><button id="post" style="height: 80px;display: none;">+</button>
         <script>
             setInterval(()=>{
-                const posts = fetch('/posts', {
+                const posts = fetch('/allposts', {
                     method: 'GET',
                 }).then(res => res.text()).then(data => {
-                    document.getElementById("allposts").innerHTML = data
+                    document.getElementById("posts").innerHTML = data
                 });
             }, 5000);
             document.getElementsByClassName("contact").onclick = function() {
