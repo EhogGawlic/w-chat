@@ -184,6 +184,11 @@ form button {
             </div>
          </div><button id="post" style="height: 80px;display: none;">+</button>
         <script>
+            function imageifydriveimg(url){
+                //https://drive.google.com/file/d/11VC7HFQjrrguIDUvN0lWJx4HA393CW0E/view?usp=sharing
+                const id = url.split('/d/')[1].split('/view')[0];
+                return `https://drive.google.com/thumbnail?id=${id}&sz=w320-h320`;
+            }
             setInterval(()=>{
                 const posts = fetch('/allposts', {
                     method: 'GET',

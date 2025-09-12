@@ -150,6 +150,9 @@ app.get('/allposts', async (req, res) => {
     }
     res.send(postAll)
 })
+app.use(function (req, res, next) {
+  res.status(404).render('404.html');
+});
 app.get('/chatjoin', (req, res) => {
     res.render('chatjoin')
 })
