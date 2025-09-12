@@ -138,6 +138,18 @@ app.get('/', async (req, res) => {
     }
     res.render('index', {posts: postAll, loggedin: user?true:false, usr: user?user.username:null,contacts})
 })
+app.get('/allposts', async (req, res) => {
+    
+    let postAll = ``
+    const posts = await getAllData('posts')
+    let notice = await getOneData('notices',{})
+    postAll += `<div class="post">${notice.title}<br>${notice.content}</div><br>`
+    for (let i = posts.length - 1; i >= 0; i--) {
+        
+        postAll += formatData(posts[i],i)+"<br>"
+    }
+    res.send(postAll)
+})
 app.get('/chatjoin', (req, res) => {
     res.render('chatjoin')
 })

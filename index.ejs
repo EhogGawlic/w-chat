@@ -169,7 +169,7 @@ form button {
     <body>
         <div class = "box" id="topbox">W CHAT <button id="chatj" style="height: 80px;">Join chat</button><button id="si" style="height: 80px;">Sign in</button></div>
         <div class = "box" id="leftbox"> <span id="usr" style="display: none;">Logged in as <%= usr %> <button onclick="window.location = '/user:name=<%= usr %>'">Go to user page</button></span>
-            <%- posts %>
+            <div id="posts"><%- posts %></div>
         </div>
         <div class = "box" id="rightbox"> 
             <!--messages (private)-->
@@ -184,6 +184,13 @@ form button {
             </div>
          </div><button id="post" style="height: 80px;display: none;">+</button>
         <script>
+            setInterval(()=>{
+                const posts = fetch('/posts', {
+                    method: 'GET',
+                }).then(res => res.text()).then(data => {
+                    document.getElementById("allposts").innerHTML = data
+                });
+            }, 5000);
             document.getElementsByClassName("contact").onclick = function() {
                 const messages = fetch('/messages', {
                     method: 'POST',
