@@ -294,7 +294,7 @@ app.get('/user:name=:name', async (req, res) => {
 		const data =  `
 	    <div id="bigpost">
 	 <form action="/changedname" method="post">
-	        <h2><input value="${user.dname}" type="text"name="dname"></h2>
+	        <h2><input value='${user.dname}' id="dninp"type="text"name="dname"></h2>
 		 
 	            <input type="text" class="hidden" name="username" value='${user.username}'>
 		 	<button type="submit">Change</button><br>
@@ -306,6 +306,16 @@ app.get('/user:name=:name', async (req, res) => {
 	            <button type="submit">Ban user (only if you're a moderator)</button>
 	        </form>
 	    </div>
+        <script>
+            document.getElementById("dninp").onchange = function() {
+                if (this.value.contains("\\'")){
+                alert("Display name cannot contain single quotes")
+                    document.querySelector("button[type='submit']").disabled = true
+                } else {
+                    document.querySelector("button[type='submit']").disabled = false
+                }
+            }
+        </script>
 	    `
 	    res.render('singlepost', {post: data})
 		return
