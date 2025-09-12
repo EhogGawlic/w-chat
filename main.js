@@ -283,7 +283,7 @@ app.get('/user:name=:name', async (req, res) => {
 				<h3>${user.username}</h3>
 		        <p>${user.status}</p>
 		        <form action="/ban" method="post">
-		            <input type="text" class="hidden" name="username" value="${user.username}">
+		            <input type="text" class="hidden" name="username" value='${user.username}'>
 		            <button type="submit">Ban user (only if you're a moderator)</button>
 		        </form>
 		    </div>
@@ -296,13 +296,13 @@ app.get('/user:name=:name', async (req, res) => {
 	 <form action="/changedname" method="post">
 	        <h2><input value="${user.dname}" type="text"name="dname"></h2>
 		 
-	            <input type="text" class="hidden" name="username" value="${user.username}">
+	            <input type="text" class="hidden" name="username" value='${user.username}'>
 		 	<button type="submit">Change</button><br>
 		 </form>
 			<h3>${user.username}</h3>
 	        <p>${user.status}</p>
 	        <form action="/ban" method="post">
-	            <input type="text" class="hidden" name="username" value="${user.username}">
+	            <input type="text" class="hidden" name="username" value='${user.username}'>
 	            <button type="submit">Ban user (only if you're a moderator)</button>
 	        </form>
 	    </div>
@@ -351,12 +351,15 @@ app.post('/ban', async(req, res)=>{
 	const tuser = await getOneData("users", {username:cookieToken.username})
 	if (!tuser){
 		res.send("You are not logged in")
+		return
 	}
 	if (tuser.status != '<span class="red">[MOD]</span>'){
-		res.send("You are not authorized to ban people")
+		res.send("You really though, huh?")
+		return
 	}
 	if (user.status == '<span class="red">[MOD]</span>'){
-		res.send("You can not ban mods.")
+		res.send("You really though, huh?")
+		return
 	}
 	updateData('users', {username}, {status: '(Banned)'})
 	res.send('yay')
@@ -568,6 +571,9 @@ app.set('views', __dirname)
 app.listen(port, () => {
   console.log(`App listening on port ${port}`)
 })//
+
+
+
 
 
 
