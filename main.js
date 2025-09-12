@@ -58,6 +58,7 @@ async function getAllData(collection){
 }
 async function addData(collection, data){
     const db = client.db('wchat')
+    
     const coll = db.collection(collection)
     const result = await coll.insertOne(data)
     return result
@@ -117,6 +118,13 @@ app.get('/', async (req, res) => {
     let contacts = ``
     const posts = await getAllData('posts')
     const tusr = user?await getOneData('users', {username: user.username}):null
+    let notice = await getOneData('notices',{})
+    if (!notice){
+        await addData('notices', {title:"Notice",content:"Important stuf will be here"})
+    }
+    
+    notice = await getOneData('notices',{})
+    postAll += `<div class="post">${notice.title}<br>${notice.content}</div><br>`
 	if (tusr && tusr.contacts){
     const cntcts = tusr?tusr.contacts:[]
 	    console.log(cntcts)
@@ -467,6 +475,28 @@ app.get('/admin/um', async (req, res) => {
         return `<p><form action='/admin/um' method='post'>${u.dname} (<input type="text" value='${u.username}' name="username">) - ${u.status} <button type="submit">un-Promote</button></form></p>`
     })
     res.render('admin', {users: usrlist.join('')})
+})
+app.post('/admin/notice', async (req, res) => {
+    if (!req.cookies.token) {
+        res.send("You are not logged in <button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    const token = await verifyToken(req.cookies.token)
+    if (!token) {
+        res.send("Expired login <button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    const tuser = await getOneData('users', {username: token.username})
+    if (!tuser) {
+        res.send("You are not logged in <button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    if (tuser.username != "ehogin"){
+        res.send("You are not authorized to view this page <button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    await updateData('notices', {}, {title: req.body.title, content: req.body.content})
+    res.redirect('/admin')
 })
 app.post('/admin', async (req, res) => {
     if (!req.cookies.token) {
