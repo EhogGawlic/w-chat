@@ -172,15 +172,39 @@ form button {
                 <a href="/terms">Terms and conditions</a><br>
                 <form action="/posted" method="POST">
                 -Title-<br>
-                <input type="text" name="title" placeholder="Title" required><br>
+                <input type="text" name="title" placeholder="Title" required id = "title"><br>
                 <br>
                 
                 -Content-<br>
                 <textarea rows="5" cols="50" type="text" name="content" placeholder="blahblahblah" required></textarea><br>
-                <!--<button type="button" onclick="document.getElementsByName('content')[0].value += '<img src=\'\'>'">Image</button><br><br>-->
+                <button type="button" onclick="document.getElementsByName('content')[0].value += '<img src=\'Image URL\'>'">Image</button><br>
+                <button type="button" onclick="document.getElementsByName('content')[0].value += '<a href=\'\'>link text</a>'">Link</button><br>
+                <button type="button" onclick="document.getElementsByName('content')[0].value += '<b>Bold text</b>'">Bold</button><br>
+                <button type="button" onclick="document.getElementsByName('content')[0].value += '<em>Italic text</em>'">Italic</button><br>
+                <button type="button" onclick="document.getElementsByName('content')[0].value += '<u>Underlined text</u>'">Underline</button><br>
+                <button type="button" onclick="document.getElementsByName('content')[0].value += '<s>Strikethrough text</s>'">Strikethrough</button><br><br>
                 <button type="submit" style="height: 80px;">Post</button>
             </form>
+
+        <div id="preview">Preview will show here</div>
         </div>
+        <script>
+            const input = document.querySelector("textarea")
+            const preview = document.getElementById("preview")
+            const title = document.getElementById("title")    
+            input.onchange = ()=>{
+                const content = input.value
+                preview.innerHTML = `
+                <div class="post">
+                    <h2>${title.value}</h2>
+                    <p>by [Your display name]<br>
+                    <p>${content}</p>
+                </div>
+                `
+            }
+        </script>
     </body>
 
 </html>
+
+

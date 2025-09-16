@@ -171,17 +171,51 @@ form button {
         <div class = "box" id="middlebox"> 
             <form action="/signedup" method="POST">
                     -Username-<br>
-                    <input type="text" name="username" placeholder="Username" required><br>
+                    <input id="username" type="text" name="username" placeholder="Username" required><br>
                     <br>
-                    
+                    <span id="msg"></span><br>
                     -Email-<br>
                     <input type="text" name="email" placeholder="Email" required><br>
                     <br>
                     -Password-<br>
-                    <input type="password" name="password" placeholder="Password" required><br><br>
-                    <button type="submit" style="height: 80px;">Sign Up</button>
+                    <input type="password" id="password" name="password" placeholder="Password" required><br><br>
+                    
+                    <!---Confirm Password-<br>
+                    <input type="password" id="comfpass" placeholder="Password" required><br>-->
+                    <button type="submit" style="height: 80px;" disabled="true">Sign Up</button>
             </form>
         </div>
+        <script>
+            document.getElementById('username').addEventListener('input', function() {
+                const username = this.value;
+                const msg = document.getElementById('msg');
+                
+                const valid = /^[a-zA-Z0-9_]{1,20}$/.test(username);
+                
+                if (!valid) {
+                    msg.textContent = 'Invalid username. Use 1-20 letters, numbers, or underscores.';
+                    msg.classList.add('red');
+                    //disable submit button
+                    document.querySelector('button[type="submit"]').disabled = true;
+                } else {
+                    msg.textContent = '';
+                    msg.classList.remove('red');
+                    document.querySelector('button[type="submit"]').disabled = false;
+                }
+            });/*
+            document.getElementById("comfpass").onchange = function() {
+                if (document.getElementById("password").value != document.getElementById("comfpass").value) {
+                    document.getElementById("msg").textContent = "Passwords do not match";
+                    document.getElementById("msg").classList.add("red");
+                    document.querySelector('button[type="submit"]').disabled = true;
+                } else {
+                    document.getElementById("msg").textContent = "";
+                    document.getElementById("msg").classList.remove("red");
+                    document.querySelector('button[type="submit"]').disabled = false;
+                }
+            };*/
+
+        </script>
     </body>
 
 </html>

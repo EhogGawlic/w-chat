@@ -180,8 +180,8 @@ form button {
     </head>
     <body>
         <div class = "box" id="topbox">W CHAT <button id="chatj" style="height: 80px;">Join chat</button><button id="si" style="height: 80px;">Sign in</button></div>
-        <div class = "box" id="leftbox"> <span id="usr" style="display: none;">Logged in as <%= usr %></span>
-            <%- posts %>
+        <div class = "box" id="leftbox"> <span id="usr" style="display: none;">Logged in as <%= usr %> <button onclick="window.location = '/user:name=<%= usr %>'">Go to user page</button></span>
+            <div id="posts"><%- posts %></div>
         </div>
         <div class = "box" id="rightbox"> 
             <!--messages (private)-->
@@ -200,6 +200,19 @@ form button {
             </div>
          </div><button id="post" style="height: 80px;display: none;">+</button>
         <script>
+            function imageifydriveimg(url){
+                //https://drive.google.com/file/d/11VC7HFQjrrguIDUvN0lWJx4HA393CW0E/view?usp=sharing
+                const id = url.split('/d/')[1].split('/view')[0];
+                return `https://drive.google.com/thumbnail?id=${id}&sz=w320-h320`;
+            }
+            setInterval(()=>{
+                const posts = fetch('/allposts', {
+                    method: 'GET',
+                }).then(res => res.text()).then(data => {
+                    document.getElementById("posts").innerHTML = data
+                });
+            }, 5000);
+            let currentContact = null;
             Array.from(document.getElementsByClassName("contact")).forEach(contact=>{
             contact.onclick = function() {
                 fetch('/messages', {
@@ -211,6 +224,7 @@ form button {
                     body: JSON.stringify({contact: this.id.slice(7)})
                 }).then(res => res.text()).then(data => {
                     document.getElementById("messages").innerHTML = data
+                    currentContact = this.id.slice(7)
                 });
             }});
             document.getElementById("chatsend").onclick = function() {
@@ -222,7 +236,7 @@ form button {
                         'Content-Type': 'application/json'
                     },
                     credentials: 'include',
-                    body: JSON.stringify({message: message, contact: document.querySelector('.contact.selected')?.id.slice(7)})
+                    body: JSON.stringify({message: message, contact: currentContact})
                 }).then(res => res.text()).then(data => {
                     document.getElementById("messages").innerHTML = data
                     document.getElementById("chatinput").value = ''
