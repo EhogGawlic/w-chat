@@ -133,6 +133,7 @@ app.get('/', async (req, res) => {
 	        console.log(c)
 	        contacts += `<p class="contact" id="contact${c}">${c.charAt(0)}</p><br>`
 	    })
+    contacts+='<p class="contact" id="newc">+</p><br></br>'
 	}
     for (let i = posts.length - 1; i >= 0; i--) {
         postAll += formatData(posts[i],i)+"<br>"
@@ -178,6 +179,29 @@ app.post('/sendmessage', async (req, res) => {
     messages.push({author: user.username, message: req.body.message})
     await updateData('chats', {name: contact, users: {$in: [user.username]}}, {messages: chat.messages})
     res.send(messages.map(m => `<p><b>${m.author}:</b> ${m.message}</p>`).join(''))
+})
+app.post('/newchat', async (req, res) => {
+
+    if(!req.cookies.token){
+        res.send("Error: not logged in (wait,what?)")
+        return
+    }
+    const user = await verifyToken(req.cookies.token)
+    if(!user){
+        res.send("Error: expired login")
+        return
+    }
+    console.log("hey"+req.body)
+    const contacts = req.body.contacts
+    const cname = req.body.cname
+    const chat = {name: cname, users: [user.username, contacts], messages: []}
+    addData('chats', chat)
+    for (const u of chat.users){
+        const usr = await getOneData('users', {username:u})
+        if (!usr.contacts) usr.contacts = []
+        if (!usr.contacts.includes(cname)) usr.contacts.push(cname)
+        await updateData('users', {username:usr.username}, {contacts: usr.contacts})
+    }
 })
 app.post('/signedin', async (req, res) => {
     const username = req.body.username

@@ -138,7 +138,7 @@ form button {
     border: 5px solid black;
     border-radius: 20px;
     background-color: lightgray;
-    margin: 2.5px;
+    margin: 0px;
     font-size: 20px;
     width: 30px;
     height: 30px;
@@ -154,6 +154,7 @@ form button {
     bottom: 0;
     width: 50px;
     overflow-y: scroll;
+    border: 1px solid black;
 }
 #messages {
     margin: 0;
@@ -163,7 +164,7 @@ form button {
     right: 0;
     bottom: 0px;
     overflow-y: scroll;
-
+    border: 1px solid black;
 
 }
 
@@ -188,14 +189,13 @@ form button {
             <!--tabs for groups/people-->
             
             <div class="box" id="contacts">
-                igno<br>re<br>this<br>is<br>a<br>work<br>in<br>prog<br>ress<br><br>
                 <%- contacts %>
             </div>
             <div class="box" id="messages">
 
             </div>
             <div id="chatinp">
-                <input type="text" id="chatinput" multiple placeholder="Type a message...">
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="text" id="chatinput" multiple placeholder="Type a message...">
                 <button id="chatsend">Send</button>
             </div>
          </div><button id="post" style="height: 80px;display: none;">+</button>
@@ -208,6 +208,7 @@ form button {
             setInterval(()=>{
                 const posts = fetch('/allposts', {
                     method: 'GET',
+                        credentials: 'include'
                 }).then(res => res.text()).then(data => {
                     document.getElementById("posts").innerHTML = data
                 });
@@ -215,6 +216,44 @@ form button {
             let currentContact = null;
             Array.from(document.getElementsByClassName("contact")).forEach(contact=>{
             contact.onclick = function() {
+                if (this.id === "newc") {
+                    let enough = false;
+                    let names = ["<%= usr %>"]
+                    while (!enough){
+                        const name = prompt("Enter the username of the person you want to chat with:");
+                        if(!name)enough = true;
+                        if (name === "<%= usr %>") {
+                            alert("You cannot create a chat with yourself!");
+                            continue;
+                        }
+                        if (names.includes(name)) {
+                            alert("You have already added this user!");
+                            continue;
+                        }
+                        names.push(name);
+                        if (prompt('Done (y/N)?').toLowerCase() === 'y') {
+                            enough = true;
+                        }
+                    }
+                    const cname = prompt("Enter the name of the chat (optional):");
+                    if(!cname) return;
+                    fetch('/newchat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        credentials: 'include',
+                        body: JSON.stringify({contacts: names, cname})
+                    }).then(res => res.text()).then(data => {
+                        if (data.startsWith("Error:")) {
+                            alert(data);
+                            return;
+                        }
+                        alert("yay! chat created, reloading to show it");
+                        location.reload();
+                    });
+                    return;
+                }
                 fetch('/messages', {
                     method: 'POST',
                     headers: {
