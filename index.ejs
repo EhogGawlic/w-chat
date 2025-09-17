@@ -207,7 +207,7 @@ form button {
             }
             let currentContact = null;
             setInterval(()=>{
-                fetch('/messages', {
+               /* fetch('/messages', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -216,7 +216,7 @@ form button {
                     body: JSON.stringify({contact: currentContact})
                 }).then(res => res.text()).then(data => {
                     document.getElementById("messages").innerHTML = data
-            });
+            });*/
                 });
                 fetch('/allposts', {
                     method: 'GET',
@@ -233,7 +233,7 @@ form button {
 
                     };
                 });
-            }, 5000);
+            }, 10000);
             Array.from(document.getElementsByClassName("contact")).forEach(contact=>{
             contact.onclick = function() {
                 if (this.id === "newc") {
