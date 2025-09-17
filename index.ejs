@@ -230,13 +230,21 @@ form button {
                             alert("You have already added this user!");
                             continue;
                         }
+                        if (name.contains("'")) {
+                            alert("Name cannot contain single quotes!");
+                            continue;
+                        }
                         names.push(name);
                         if (prompt('Done (y/N)?').toLowerCase() === 'y') {
                             enough = true;
                         }
                     }
-                    const cname = prompt("Enter the name of the chat (optional):");
+                    const cname = prompt("Enter the name of the chat (cannot contain quotes or angle brackets):");
                     if(!cname) return;
+                    if (cname.contains('"') || cname.contains("'") || cname.contains("<") || cname.contains(">")) {
+                        alert("Chat name cannot contain quotes or angle brackets!");
+                        return;
+                    }
                     fetch('/newchat', {
                         method: 'POST',
                         headers: {
