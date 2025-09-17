@@ -449,7 +449,7 @@ app.get('/admin', async (req, res) => {
     }
     const users = await getAllData('users')
     const usrlist = users.map(u => {
-        return `<p><form action='/admin' method='post'>${u.dname} (<input type="text" value='${u.username}' name="username">) - ${u.status} <button type="submit">Promote</button></form></p>`
+        return `<p><form action='/admin' method='post'>${u.dname} - ${u.email} (<input type="text" value='${u.username}' name="username">) - ${u.status} <button type="submit">Promote</button></form></p>`
     })
     res.render('admin', {users: usrlist.join('')})
 })
