@@ -146,8 +146,8 @@ app.get('/allposts', async (req, res) => {
     const posts = await getAllData('posts')
     let notice = await getOneData('notices',{})
     postAll += `<div class="post">${notice.title}<br>${notice.content}</div><br>`
+    
     for (let i = posts.length - 1; i >= 0; i--) {
-        
         postAll += formatData(posts[i],i)+"<br>"
     }
     res.send(postAll)

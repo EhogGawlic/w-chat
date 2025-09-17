@@ -205,15 +205,35 @@ form button {
                 const id = url.split('/d/')[1].split('/view')[0];
                 return `https://drive.google.com/thumbnail?id=${id}&sz=w320-h320`;
             }
+            let currentContact = null;
             setInterval(()=>{
-                const posts = fetch('/allposts', {
+                fetch('/messages', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({contact: currentContact})
+                }).then(res => res.text()).then(data => {
+                    document.getElementById("messages").innerHTML = data
+            });
+                });
+                fetch('/allposts', {
                     method: 'GET',
                         credentials: 'include'
                 }).then(res => res.text()).then(data => {
                     document.getElementById("posts").innerHTML = data
+                    document.querySelectorAll('.post').forEach(post => {
+                    post.style.cursor = 'pointer';
+                        const id = parseInt(post.id);
+                        console.log("id"+id)
+                    post.onclick = function() {
+                        console.log( `/post:id=${id}`)
+                        window.location.href = `/post:id=${id}`;
+
+                    };
                 });
             }, 5000);
-            let currentContact = null;
             Array.from(document.getElementsByClassName("contact")).forEach(contact=>{
             contact.onclick = function() {
                 if (this.id === "newc") {
