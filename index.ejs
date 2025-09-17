@@ -176,7 +176,16 @@ form button {
     height: 50px;
     border-top: 3px solid black;
     background-color: lightgray;
-}</style>
+}
+#newchatbox{
+    top: 30%;
+    left: 30%;
+    right: 30%;
+    bottom: 30%;
+}
+
+
+</style>
         <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/EhogGawlic/w-chat/refs/heads/main/public/favicon.png">
     </head>
     <body>
@@ -199,6 +208,15 @@ form button {
                 <button id="chatsend">Send</button>
             </div>
          </div><button id="post" style="height: 80px;display: none;">+</button>
+        <div class="box" id="newchatbox" style="display: none;">
+            <form id="newchatform">
+                Create new chat with: <input type="text" id="newchatnames" placeholder="username1, username2, ...">
+                <button type="button" id="adduser">Add user</button><br>
+                Users:
+                <ul id="ncusers"></ul><br>
+                <button type="submit" id="cchatbtn">Create</button>
+            </form>
+        </div>
         <script>
             function imageifydriveimg(url){
                 //https://drive.google.com/file/d/11VC7HFQjrrguIDUvN0lWJx4HA393CW0E/view?usp=sharing
@@ -237,49 +255,38 @@ form button {
             Array.from(document.getElementsByClassName("contact")).forEach(contact=>{
             contact.onclick = function() {
                 if (this.id === "newc") {
-                    let enough = false;
                     let names = ["<%= usr %>"]
-                    while (!enough){
-                        const name = prompt("Enter the username of the person you want to chat with:");
-                        if(!name)enough = true;
-                        if (name === "<%= usr %>") {
-                            alert("You cannot create a chat with yourself!");
-                            continue;
-                        }
-                        if (names.includes(name)) {
-                            alert("You have already added this user!");
-                            continue;
-                        }
-                        if (name.contains("'")) {
-                            alert("Name cannot contain single quotes!");
-                            continue;
-                        }
-                        names.push(name);
-                        if (prompt('Done (y/N)?').toLowerCase() === 'y') {
-                            enough = true;
-                        }
+                    document.getElementById("newchatbox").style.display = "block";
+                    document.getElementById("adduser").onclick = function() {
+                        const newname = document.getElementById("newchatnames").value.trim();
+                        if (newname === '' || names.includes(newname)) return;
+                        names.push(newname);
+                        const li = document.createElement("li");
+                        li.textContent = newname;
+                        document.getElementById("ncusers").appendChild(li);
+                        document.getElementById("newchatnames").value = '';
+                    };
+                    document.getElementById("newchatform").onsubmit = function(e) {
+                        e.preventDefault();
+                        document.getElementById("newchatbox").style.display = "none";
+                        const cname = prompt("Enter a name for the chat (optional):");
+                        if (cname === null) return;
+                        fetch('/newchat', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            credentials: 'include',
+                            body: JSON.stringify({contacts: names, cname})
+                        }).then(res => res.text()).then(data => {
+                            if (data.startsWith("Error:")) {
+                                alert(data);
+                                return;
+                            }
+                            alert("yay! chat created, reloading to show it");
+                            location.reload();
+                        });
                     }
-                    const cname = prompt("Enter the name of the chat (cannot contain quotes or angle brackets):");
-                    if(!cname) return;
-                    if (cname.contains('"') || cname.contains("'") || cname.contains("<") || cname.contains(">")) {
-                        alert("Chat name cannot contain quotes or angle brackets!");
-                        return;
-                    }
-                    fetch('/newchat', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        credentials: 'include',
-                        body: JSON.stringify({contacts: names, cname})
-                    }).then(res => res.text()).then(data => {
-                        if (data.startsWith("Error:")) {
-                            alert(data);
-                            return;
-                        }
-                        alert("yay! chat created, reloading to show it");
-                        location.reload();
-                    });
                     return;
                 }
                 fetch('/messages', {

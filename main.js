@@ -193,15 +193,18 @@ app.post('/newchat', async (req, res) => {
     }
     console.log("hey"+req.body)
     const contacts = req.body.contacts
+    console.log(contacts)
     const cname = req.body.cname
-    const chat = {name: cname, users: [user.username, contacts], messages: []}
-    addData('chats', chat)
+    const chat = {name: cname, users: contacts, messages: []}
     for (const u of chat.users){
+        console.log("ln201"+u)
         const usr = await getOneData('users', {username:u})
         if (!usr.contacts) usr.contacts = []
         if (!usr.contacts.includes(cname)) usr.contacts.push(cname)
         await updateData('users', {username:usr.username}, {contacts: usr.contacts})
     }
+    addData('chats', chat)
+    res.send("Yey")
 })
 app.post('/signedin', async (req, res) => {
     const username = req.body.username
