@@ -218,6 +218,44 @@ form button {
             </form>
         </div>
         <script>
+            //phone mode
+            if (innerHeight>innerWidth){
+                    document.getElementById("leftbox").style.right = "0";
+                    document.getElementById("leftbox").style.bottom = "50%";
+                    document.getElementById("rightbox").style.left = "0";
+                    document.getElementById("rightbox").style.top = "50%";
+                    document.getElementById("rightbox").style.bottom = "0";
+                    document.getElementById("rightbox").style.right = "0";
+                    document.getElementById("middlebox").style.display = "none";
+                } else {
+                    document.getElementById("leftbox").style.right = "50%";
+                    document.getElementById("leftbox").style.bottom = "10px";
+                    document.getElementById("rightbox").style.left = "50%";
+                    document.getElementById("rightbox").style.top = "120px";
+                    document.getElementById("rightbox").style.bottom = "10px";
+                    document.getElementById("rightbox").style.right = "0";
+                    document.getElementById("middlebox").style.display = "block";
+                }
+            window.onresize = function(){
+                if (innerHeight>innerWidth){
+                    document.getElementById("leftbox").style.right = "0";
+                    document.getElementById("leftbox").style.bottom = "50%";
+                    document.getElementById("rightbox").style.left = "0";
+                    document.getElementById("rightbox").style.top = "50%";
+                    document.getElementById("rightbox").style.bottom = "0";
+                    document.getElementById("rightbox").style.right = "0";
+                    document.getElementById("middlebox").style.display = "none";
+                } else {
+                    document.getElementById("leftbox").style.right = "50%";
+                    document.getElementById("leftbox").style.bottom = "10px";
+                    document.getElementById("rightbox").style.left = "50%";
+                    document.getElementById("rightbox").style.top = "120px";
+                    document.getElementById("rightbox").style.bottom = "10px";
+                    document.getElementById("rightbox").style.right = "0";
+                    document.getElementById("middlebox").style.display = "block";
+                }
+            }
+
             function imageifydriveimg(url){
                 //https://drive.google.com/file/d/11VC7HFQjrrguIDUvN0lWJx4HA393CW0E/view?usp=sharing
                 const id = url.split('/d/')[1].split('/view')[0];
