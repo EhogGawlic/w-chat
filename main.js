@@ -196,14 +196,18 @@ app.post('/newchat', async (req, res) => {
     console.log(contacts)
     const cname = req.body.cname
     const chat = {name: cname, users: contacts, messages: []}
+    addData('chats', chat)
     for (const u of chat.users){
         console.log("ln201"+u)
         const usr = await getOneData('users', {username:u})
+        if (!usr){
+            res.send("Error: user "+u+" not found")
+            return
+        }
         if (!usr.contacts) usr.contacts = []
         if (!usr.contacts.includes(cname)) usr.contacts.push(cname)
         await updateData('users', {username:usr.username}, {contacts: usr.contacts})
     }
-    addData('chats', chat)
     res.send("Yey")
 })
 app.post('/signedin', async (req, res) => {
@@ -648,7 +652,9 @@ app.post('/messages', async (req, res) => {
     console.log(req.body)
     const contact = req.body.contact
     const chat = await getOneData('chats', {name: contact, users: {$in: [user.username]}})
+    
     if(!chat){
+        console.log(":(")
         res.send("No chat found")
         return
     }
