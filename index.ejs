@@ -189,6 +189,10 @@ form button {
         <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/EhogGawlic/w-chat/refs/heads/main/public/favicon.png">
     </head>
     <body>
+        <audio id="btnclick" class="hidden">
+            <source src="https://raw.githubusercontent.com/EhogGawlic/w-chat/refs/heads/main/public/click.mp3" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
         <div class = "box" id="topbox">W CHAT <button id="chatj" style="height: 80px;">Join chat</button><button id="si" style="height: 80px;">Sign in</button></div>
         <div class = "box" id="leftbox"> <span id="usr" style="display: none;">Logged in as <%= usr %> <button onclick="window.location = '/user:name=<%= usr %>'">Go to user page</button></span>
             <div id="posts"><%- posts %></div>
@@ -201,7 +205,6 @@ form button {
                 <%- contacts %>
             </div>
             <div class="box" id="messages">
-
             </div>
             <div id="chatinp">
                 &nbsp;&nbsp;&nbsp;&nbsp;<input type="text" id="chatinput" multiple placeholder="Type a message...">
@@ -219,6 +222,11 @@ form button {
         </div>
         <script>
             //phone mode
+            Array.from(document.querySelectorAll('button')).forEach(btn => {
+                btn.addEventListener("click", ()=> {
+                    document.getElementById("btnclick").play();
+                })
+            });
             if (innerHeight>innerWidth){
                     document.getElementById("leftbox").style.right = "0";
                     document.getElementById("leftbox").style.bottom = "50%";
