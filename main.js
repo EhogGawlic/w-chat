@@ -75,6 +75,8 @@ async function deleteData(collection, query){
     const result = await coll.deleteOne(query)
     
 }
+const deebee = client.db('wchat')
+deebee.createCollection('images')
 async function updateData(collection, query, data){
 	const db = client.db('wchat')
 	const coll = db.collection(collection)
@@ -357,6 +359,11 @@ app.get('/user:name=:name', async (req, res) => {
 		    res.render('singlepost', {post: data})
 			return
 		}
+        if (!tuser.pfp){
+            tuser.pfpid = "0"
+            await updateData("users", {username:tuser.username}, {pfp:tuser.pfp})
+        }
+        
 		const data =  `
 	    <div id="bigpost">
 	 <form action="/changedname" method="post">
@@ -498,14 +505,22 @@ app.get('/admin', async (req, res) => {
         res.send("You are not logged in <button onclick='history.back()'>Go Back</button>")
         return
     }
-    if (user.username != "ehogin"){
+    if (user.username != "ehogin" && user.username != "OllieVera"){
         res.send("You are not authorized to view this page <button onclick='history.back()'>Go Back</button>")
     }
-    const users = await getAllData('users')
-    const usrlist = users.map(u => {
-        return `<p><form action='/admin' method='post'>${u.dname} - ${u.email} (<input type="text" value='${u.username}' name="username">) - ${u.status} <button type="submit">Promote</button></form></p>`
-    })
-    res.render('admin', {users: usrlist.join('')})
+    if (user.username == "ehogin"){
+        const users = await getAllData('users')
+        const usrlist = users.map(u => {
+            return `<p><form action='/admin' method='post'>${u.dname} - ${u.email} (<input type="text" value='${u.username}' name="username">) - ${u.status} <button type="submit">Promote</button></form></p>`
+        })
+        res.render('admin', {users: usrlist.join('')})
+        return
+    }
+    if (user.username == "OllieVera"){
+        res.render('admin', {users: "lol u cant ban magnus"})
+        return
+    }
+    res.send("oops i did smth wrong")
 })
 app.get('/admin/ban', async (req, res) => {
     if (!req.cookies.token) {
@@ -554,6 +569,34 @@ app.get('/admin/um', async (req, res) => {
         return `<p><form action='/admin/um' method='post'>${u.dname} (<input type="text" value='${u.username}' name="username">) - ${u.status} <button type="submit">un-Promote</button></form></p>`
     })
     res.render('admin', {users: usrlist.join('')})
+})
+app.post('/addimg',async(req,res)=>{
+    if (!req.cookies.token) {
+        res.send("You are not logged in <button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    const token = await verifyToken(req.cookies.token)
+    if (!token) {
+        res.send("Expired login <button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    const tuser = await getOneData('users', {username: token.username})
+    if (!tuser) {
+        res.send("You are not logged in <button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    /** @type{Blob} */
+    const img = req.body.img
+    //img is blob
+    const imgurl = URL.createObjectURL(img)
+    await addData('images', {url: imgurl})
+    const nimg = await getOneData('images', {url: imgurl})
+    res.send(nimg._id)
+})
+app.get('/image:id=:id', async(req,res)=>{
+    const id = req.params.id
+    const img = await getOneData('images', {_id: id})
+    res.send(img.url)
 })
 app.post('/admin/notice', async (req, res) => {
     if (!req.cookies.token) {
