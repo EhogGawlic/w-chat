@@ -264,7 +264,23 @@ form button {
                 const id = url.split('/d/')[1].split('/view')[0];
                 return `https://drive.google.com/thumbnail?id=${id}&sz=w320-h320`;
             }
-            let currentContact = null;
+            let currentContact = localStorage.getItem("currentContact") || null;
+            if (currentContact) {
+                fetch('/messages', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({contact: currentContact})
+                }).then(res => res.text()).then(data => {
+                    document.getElementById("messages").innerHTML = data
+                    setTimeout(()=>{
+                        const messagesDiv = document.getElementById("messages");
+                        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                    }, 2000)
+                });
+            }
             setInterval(()=>{
                /* fetch('/messages', {
                     method: 'POST',
@@ -340,6 +356,7 @@ form button {
                 }).then(res => res.text()).then(data => {
                     document.getElementById("messages").innerHTML = data
                     currentContact = this.id.slice(7)
+                    localStorage.setItem("currentContact", currentContact);
                     setTimeout(()=>{
                         const messagesDiv = document.getElementById("messages");
                         messagesDiv.scrollTop = messagesDiv.scrollHeight;
