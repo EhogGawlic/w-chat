@@ -42,8 +42,8 @@ button:hover {
 }
 #post {
     position: fixed;
-    right: 45%;
-    left: 45%;
+    right: 50%;
+    left: 40%;
     bottom: 10px;
     font-size: 50px;
 }
@@ -162,10 +162,9 @@ form button {
     top: 0;
     left: 50px;
     right: 0;
-    bottom: 0px;
+    bottom: 50px;
     overflow-y: scroll;
     border: 1px solid black;
-
 }
 
 #chatinp { 
@@ -341,6 +340,10 @@ form button {
                 }).then(res => res.text()).then(data => {
                     document.getElementById("messages").innerHTML = data
                     currentContact = this.id.slice(7)
+                    setTimeout(()=>{
+                        const messagesDiv = document.getElementById("messages");
+                        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                    }, 2000)
                 });
             }});
             document.getElementById("chatsend").onclick = function() {
