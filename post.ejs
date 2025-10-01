@@ -186,21 +186,30 @@ form button {
                 <button type="submit" style="height: 80px;">Post</button>
             </form>
 
-        <div id="preview">Preview will show here</div>
+        <div id="preview">Preview and messages (if your post contains disallowed things) will show here</div>
         </div>
         <script>
             const input = document.querySelector("textarea")
             const preview = document.getElementById("preview")
             const title = document.getElementById("title")    
+            const submit = document.querySelector("form button[type='submit']")
             input.onchange = ()=>{
                 const content = input.value
-                preview.innerHTML = `
-                <div class="post">
+                preview.innerHTML = `<div class="post">
                     <h2>${title.value}</h2>
                     <p>by [Your display name]<br>
                     <p>${content}</p>
-                </div>
-                `
+                </div>`
+//semicolons suck
+                    submit.disabled = false
+                if (content.includes("<script>")) {
+                    preview.innerHTML = "<p class='red'>Your post contains disallowed content (script tags)</p>"
+                    submit.disabled = true
+                }
+                if (content.toLowerCase().includes("mod")) {
+                    preview.innerHTML = "<p class='red'>Hah oliver</p>"
+                    submit.disabled = true
+                }
             }
         </script>
     </body>

@@ -280,18 +280,33 @@ form button {
                         messagesDiv.scrollTop = messagesDiv.scrollHeight;
                     }, 2000)
                 });
-            }
+            }/*function showChatNotification(title, body) {
+    if (document.hasFocus()) return; // Only notify if not focused
+    if (Notification.permission === "granted") {
+        new Notification(title, { body });
+    }
+}
+
+// Example: Show notification when new messages are fetched
+function fetchMessagesAndNotify() {
+    fetch('/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ contact: currentContact })
+    }).then(res => res.text()).then(data => {
+        // Compare with previous messages if needed
+        if (document.getElementById("messages").innerHTML == data) return
+        document.getElementById("messages").innerHTML = data;
+        // Example: Always notify (customize as needed)
+        showChatNotification("New message", "You have a new message!");
+
+        // Scroll to bottom
+        const messagesDiv = document.getElementById("messages");
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    });*/
             setInterval(()=>{
-               /* fetch('/messages', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({contact: currentContact})
-                }).then(res => res.text()).then(data => {
-                    document.getElementById("messages").innerHTML = data
-            });*/
+                //fetchMessagesAndNotify()
                 });
                 fetch('/allposts', {
                     method: 'GET',
