@@ -12,7 +12,11 @@ dotenv.config()
 const uri = process.env.PASSWORD;
 const client = new MongoClient(uri);
 const cookieParser = require('cookie-parser')
+const fs = require('fs')
 app.use(cookieParser())
+
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' }); // Images will be saved in 'uploads/' folder
 
 async function initMongo(){
 	try{
@@ -314,10 +318,12 @@ app.get('/post:id=:id', async (req, res) => {
         res.send("Wait, how did you find this <button onclick='history.back()'>Go Back</button>")
         return
     }
+    const author = await getOneData('users', {username: post.author.username})
+    console.log(author)
     const data =  `
     <div id="bigpost" id="${id}">
         <h2>${post.title}</h2>
-        <p>by ${post.author.dname} ${post.author.status}</p><br>
+        <p>by <img src="/image:id=${author.pfpid? author.pfpid: 0}" alt="No PFP" width="30" height="30" style="border-radius:50%;">${author.dname} ${author.status}</p><br>
         <p>${post.content}</p>
         <p>${post.replies ? formatReplies(post.replies) : ""}<button onclick="window.location='/reply:post=${id}'">Reply</button></p>
         <form action="/delete" method="post">
@@ -359,11 +365,11 @@ app.get('/user:name=:name', async (req, res) => {
 		    res.render('singlepost', {post: data})
 			return
 		}
-        if (!tuser.pfp){
+        if (!tuser.pfpid){
             tuser.pfpid = "0"
             await updateData("users", {username:tuser.username}, {pfp:tuser.pfp})
         }
-        
+        console.log(tuser.pfpid)
 		const data =  `
 	    <div id="bigpost">
 	 <form action="/changedname" method="post">
@@ -372,6 +378,13 @@ app.get('/user:name=:name', async (req, res) => {
 	            <input type="text" class="hidden" name="username" value='${user.username}'>
 		 	<button type="submit">Change</button><br>
 		 </form>
+         <br>
+         PFP<br>
+         <form action="/upload" method="post" enctype="multipart/form-data">
+                <input type="file" name="image" accept="image/*">
+                <button type="submit">Upload</button>
+            </form>
+            <img src="/image:id=${tuser.pfpid}" alt="No PFP" width="100" height="100"><br>
 			<h3>${user.username}</h3>
 	        <p>${user.status}</p>
 	        <form action="/ban" method="post">
@@ -563,6 +576,7 @@ app.get('/admin/um', async (req, res) => {
     }
     if (user.username != "ehogin"){
         res.send("You are not authorized to view this page <button onclick='history.back()'>Go Back</button>")
+        return
     }
     const users = await getAllData('users')
     const usrlist = users.map(u => {
@@ -595,8 +609,14 @@ app.post('/addimg',async(req,res)=>{
 })
 app.get('/image:id=:id', async(req,res)=>{
     const id = req.params.id
-    const img = await getOneData('images', {_id: id})
-    res.send(img.url)
+    const img = await getOneData('images', {filename:id})
+    
+    if (!img){
+        res.send(fs.readFileSync('uploads/default.png'))
+        return
+    }
+    res.set('Content-Type', 'image/webp')
+    res.send(img.data.buffer)
 })
 app.post('/admin/notice', async (req, res) => {
     if (!req.cookies.token) {
@@ -707,33 +727,43 @@ app.post('/messages', async (req, res) => {
     })
     res.send(messages)
 });
+app.post('/upload', upload.single('image'), async (req, res) => {
+    // req.file contains info about the uploaded file
+    if(!req.cookies.token){
+        res.send("no bad boi<button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    const user = await verifyToken(req.cookies.token)
+    if(!user){
+        res.send("no bad boi<button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    const usr = await getOneData('users', {username: user.username})
+    if(!usr){
+        res.send("no bad boi<button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    if (!usr.pfpid){
+        usr.pfpid = "0"
+    }
+
+    if (!req.file) {
+        return res.status(400).send('No file uploaded.');
+    }
+    console.log(req.file);
+    await updateData('users', {username: usr.username}, {pfpid:req.file.filename})
+    const file = fs.readFileSync(req.file.path)
+    await addData('images', {data:file,filename:req.file.filename,mimetype:req.file.mimetype})
+    res.redirect('/user:name='+usr.username)
+    // add blob to database
+    //await addData('images', {data: new Blob([req.file]), filename: req.file.filename, mimetype: req.file.mimetype})
+    //res.send(`File uploaded: ${req.file.filename}. URL: /image:id=`);
+});
+
 app.engine('html', require('ejs').renderFile)
 app.set('view engine', 'ejs')
 app.set('views', __dirname)
-
 app.use(express.static(__dirname+ '\\'))
-
 app.listen(port, () => {
   console.log(`App listening on port ${port}`)
-})//
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+})
