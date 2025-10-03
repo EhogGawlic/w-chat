@@ -79,8 +79,6 @@ async function deleteData(collection, query){
     const result = await coll.deleteOne(query)
     
 }
-const deebee = client.db('wchat')
-deebee.createCollection('images')
 async function updateData(collection, query, data){
 	const db = client.db('wchat')
 	const coll = db.collection(collection)
@@ -129,7 +127,7 @@ app.get('/', async (req, res) => {
     if (!notice){
         await addData('notices', {title:"Notice",content:"Important stuf will be here"})
     }
-    
+    const users = await getAllData('users')
     notice = await getOneData('notices',{})
     postAll += `<div class="post">${notice.title}<br>${notice.content}</div><br>`
 	if (tusr && tusr.contacts){
@@ -142,11 +140,14 @@ app.get('/', async (req, res) => {
     contacts+='<p class="contact" id="newc">+</p><br></br>'
 	}
     for (let i = posts.length - 1; i >= 0; i--) {
+        posts[i].author.status = users.find(u => u.username == posts[i].author.username).status
+        posts[i].author.dname = users.find(u => u.username == posts[i].author.username).dname
         postAll += formatData(posts[i],i)+"<br>"
     }
     res.render('index', {posts: postAll, loggedin: user?true:false, usr: user?user.username:null,contacts})
 })
 app.get('/allposts', async (req, res) => {
+    const users = await getAllData('users')
     
     let postAll = ``
     const posts = await getAllData('posts')
@@ -154,6 +155,9 @@ app.get('/allposts', async (req, res) => {
     postAll += `<div class="post">${notice.title}<br>${notice.content}</div><br>`
     
     for (let i = posts.length - 1; i >= 0; i--) {
+        posts[i].author.status = users.find(u => u.username == posts[i].author.username).status
+        posts[i].author.dname = users.find(u => u.username == posts[i].author.username).dname
+        
         postAll += formatData(posts[i],i)+"<br>"
     }
     res.send(postAll)
