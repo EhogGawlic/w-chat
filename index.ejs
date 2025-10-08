@@ -192,7 +192,7 @@ form button {
             <source src="https://raw.githubusercontent.com/EhogGawlic/w-chat/refs/heads/main/public/click.mp3" type="audio/mpeg">
             Your browser does not support the audio element.
         </audio>
-        <div class = "box" id="topbox">W CHAT <button id="chatj" style="height: 80px;">Join chat</button><button id="si" style="height: 80px;">Sign in</button></div>
+        <div class = "box" id="topbox">W CHAT <button onclick="window.location='/games'" style="height: 80px; right:430px;">Games</button><button id="chatj" style="height: 80px;">Join chat</button><button id="si" style="height: 80px;">Sign in</button></div>
         <div class = "box" id="leftbox"> <span id="usr" style="display: none;">Logged in as <%= usr %> <button onclick="window.location = '/user:name=<%= usr %>'">Go to user page</button></span>
             <div id="posts"><%- posts %></div>
         </div>

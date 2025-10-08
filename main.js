@@ -734,6 +734,9 @@ app.post('/messages', async (req, res) => {
     })
     res.send(messages)
 });
+app.get('/games', (req, res) => {
+    res.render('games')
+})
 app.post('/upload', upload.single('image'), async (req, res) => {
     // req.file contains info about the uploaded file
     if(!req.cookies.token){

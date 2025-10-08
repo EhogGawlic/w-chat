@@ -6,14 +6,16 @@
         <title>"Snake"</title>
     </head>
     <body>
-        <canvas id="canvas" style="top: 0;left: 0;width: 500px;height: 500px;background-color: cadetblue;"></canvas>
+        <canvas id="canvas" style="top: 0;left: 0;width: 500px;height: 500px;background-color: cadetblue;"></canvas><br>
+        <span id="score">Score: 0</span>
         <script>
-        const snake = {pixels: [[5,5],[4,5]],len: 2,pos: [5,5],dir:[1,0]}
+        const snake = {pixels: [[4,5],[5,5]],len: 2,pos: [5,5],dir:[1,0],visDir:[1,0]}
         const apple = [6,5]
         const dead = false
         const canvas = document.getElementById("canvas")
         canvas.width = canvas.style.width.replace("px","")
         canvas.height = canvas.style.height.replace("px","")
+        const score = document.getElementById("score")
         /**
          * @type {CanvasRenderingContext2D}
          */
@@ -44,8 +46,9 @@
         setInterval(()=>{
             snake.pos[0] += snake.dir[0]
             snake.pos[1] += snake.dir[1]
-            if (testSnakeColl() | snake.pos[0]<0 | snake.pos[1]<0 | snake.pos[0] > 10 | snake.pos[1] > 10){
-                alert("u died :(")
+            snake.visDir = [...snake.dir]
+            if (testSnakeColl() | snake.pos[0]<0 | snake.pos[1]<0 | snake.pos[0] >= 10 | snake.pos[1] >= 10){
+                alert("u died :( -press reload twice  to play again")
                 //ctx.fillText("u died :(", 150,250)
                 dead=true
                 return
@@ -53,9 +56,10 @@
             if (snake.pos[0] == apple[0]&& snake.pos[1] == apple[1]){
                 snake.pixels.push([...snake.pos])
                 snake.len++
-                
+                score.innerText = "Score: "+((snake.len-2)*100)
                 apple[0] = Math.floor(Math.random() * 10);
                 apple[1] = Math.floor(Math.random() * 10);
+
                 while (snake.pixels.some(p => p[0] === apple[0] && p[1] === apple[1])) {
                     apple[0] = Math.floor(Math.random() * 10);
                     apple[1] = Math.floor(Math.random() * 10);
@@ -69,19 +73,19 @@
         window.addEventListener("keydown",(e)=>{
             switch (e.key){
                 case "ArrowLeft":
-                    if (snake.dir[0] == 1) return
+                    if (snake.visDir[0] == 1) return
                     snake.dir = [-1,0]
                     break
                 case "ArrowUp":
-                    if (snake.dir[1] == 1) return
+                    if (snake.visDir[1] == 1) return
                     snake.dir = [0,-1]
                     break
                 case "ArrowRight":
-                    if (snake.dir[0] == -1) return
+                    if (snake.visDir[0] == -1) return
                     snake.dir = [1,0]
                     break
                 case "ArrowDown":
-                    if (snake.dir[1] == -1) return
+                    if (snake.visDir[1] == -1) return
                     snake.dir = [0,1]
                     break
             }
