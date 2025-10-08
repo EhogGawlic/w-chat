@@ -293,6 +293,9 @@ app.post('/posted', async (req, res) => {
     })
     res.redirect('/')
 })//
+app.get("/game", (req,res)=>{
+    res.send("game<br><iframe src='https://wchatgame.onrender.com/play' style='position:absolute;top:0;left:0;bottom:0;right:0;'></iframe><script>window.onresize=()=>{document.querySelector('iframe').width = innerWidth;document.querySelector('iframe').height = innerHeight;};document.querySelector('iframe').width = innerWidth;document.querySelector('iframe').height = innerHeight;</script>")
+})
 app.post('/delete', async (req, res) => {
     if(!req.cookies.token){
         res.send("no bad boi<button onclick='history.back()'>Go Back</button>")
@@ -763,7 +766,9 @@ app.post('/upload', upload.single('image'), async (req, res) => {
     //await addData('images', {data: new Blob([req.file]), filename: req.file.filename, mimetype: req.file.mimetype})
     //res.send(`File uploaded: ${req.file.filename}. URL: /image:id=`);
 });
-
+app.get("/snake",(req,res)=>{
+    res.render("snake")
+})
 app.engine('html', require('ejs').renderFile)
 app.set('view engine', 'ejs')
 app.set('views', __dirname)
