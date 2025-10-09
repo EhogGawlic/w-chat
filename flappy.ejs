@@ -33,9 +33,31 @@
                 ctx.fill()
                 pos.y += vy
                 vy += 0.1
-                
-                pos.x += 1
-                if(pos.y > canv.height) pos.y = 0
+                if(pos.y > canv.height){ alert(":(");pos.y = 0; vy = 2; vispipes = []}
+                vispipes.forEach(p => {
+                    ctx.fillStyle = "green"
+                    ctx.fillRect(p.x,0,50,p.holepos)
+                    ctx.fillRect(p.x,p.holepos+150,50,canv.height)
+                    p.x -= 2
+                    if(p.x + 50 < 0){
+                        vispipes.shift()
+                    }
+                    if (120 > p.x && 80 < p.x + 50){
+                        if (pos.y-20 < p.holepos || pos.y+20 > p.holepos + 150){
+                            alert(":(")
+                            pos = {x:0,y:0}
+                            vy = 2
+                            vispipes = []
+                        }
+                    }
+                })
+                if (vispipes.length < innerWidth / 300 + 2) {
+                    let lastpipe = vispipes[vispipes.length - 1]
+                    let newx = lastpipe ? lastpipe.x + 300 : 500
+                    let newholepos = Math.random() * (canv.height - 200)
+                    vispipes.push({x: newx, holepos: newholepos})
+
+                }
                 requestAnimationFrame(loop)
             }
             loop()
