@@ -153,7 +153,7 @@ form button {
 #messages {
     margin: 0;
     position: absolute;
-    top: 0;
+    top: 50px;
     left: 50px;
     right: 0;
     bottom: 50px;

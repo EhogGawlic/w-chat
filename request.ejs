@@ -4,8 +4,17 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Request</title>
+        
+        <link rel="stylesheet" type="text/css" href="/styles.css">
     </head>
     <body>
-        
+        <div id="topbox">
+            <h1>Request a feature</h1>
+            <form action="/request" method="POST">
+                <textarea name="feature" rows="4" cols="50" placeholder="Describe your feature here..." required></textarea><br>
+                <button type="submit">Submit</button>
+            </form>
+            <button onclick="location.href='/'">Go back to home</button>
+        </div>
     </body>
 </html>
