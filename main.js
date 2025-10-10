@@ -754,6 +754,47 @@ app.get('/styles.css', (req, res) => {
     res.set('Content-Type', 'text/css')
     res.sendFile(__dirname + '/styles.css')
 })
+app.get('/edit.png', (req, res) => {
+    res.sendFile(__dirname + '/edit.png')
+})
+app.put('/editchatname', async (req, res) => {
+if(!req.cookies.token){
+        res.send("Error: not logged in")
+        return
+    }
+    const user = await verifyToken(req.cookies.token)
+    if(!user){
+        res.send("Error: not logged in")
+        return
+    }
+    console.log(req.body)
+    const contact = req.body.contact
+    const chat = await getOneData('chats', {name: contact, users: {$in: [user.username]}})
+    
+    if(!chat){
+        console.log(":(")
+        res.send("Error: No chat found")
+        return
+    }
+    const newname = req.body.newname
+    if (!newname || newname.length < 1 || newname.length > 20){
+        res.send("Error: Invalid chat name")
+        return
+    }
+    await updateData('chats', {name: contact, users: {$in: [user.username]}}, {name: newname})
+    Array.from(chat.users).forEach(async u => {
+        const usr = await getOneData('users', {username: u})
+        if (!usr) return
+        if (!usr.contacts) usr.contacts = []
+        const index = usr.contacts.indexOf(contact)
+        if (index > -1) {
+            usr.contacts[index] = newname
+            await updateData('users', {username: usr.username}, {contacts: usr.contacts})
+        }
+    })
+    console.log("changed chat name to "+newname)
+    res.send("Success")
+})
 app.post('/request', async (req, res) => {
 
     if(!req.cookies.token){

@@ -23,8 +23,9 @@
             <div class="box" id="contacts">
                 <%- contacts %>
             </div>
-            <div style="position: absolute;top: 0;left: 50px;right: 0;text-align: center;height: 50px;background-color: lightgray;">
-                 <h3 id="currentchat">e</h3>
+            <div id="chatdiv" style="position: absolute;top: 0;left: 50px;right: 0;text-align: center;height: 75px;background-color: lightgray;">
+                 <span id="currentchat" style="font-size: 30pxt;">e</span>
+                 <button id="chatedit"><img src="/edit.png" style="position: relative;top: -2.5px;left: -7.5px;"></button>
             </div>
             <div class="box" id="messages">
             </div>
@@ -49,6 +50,27 @@
                     document.getElementById("btnclick").play();
                 })
             });
+                        chatedit.onclick = function() {
+                const newname = prompt("Enter new chat name (leave blank to keep current):");
+                if (newname === null) return;
+                fetch('/editchatname', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({newname, contact: currentContact})
+                }).then(res => res.text()).then(data => {
+                    if (data.startsWith("Error:")) {
+                        alert(data);
+                        return;
+                    }
+                    localStorage.setItem("currentContact", newname);
+                    alert("Chat name updated to " + newname);
+                    document.getElementById("currentchat").innerText = newname;
+                    location.reload();
+                });
+            }
             if (innerHeight>innerWidth){
                     document.getElementById("leftbox").style.right = "0";
                     document.getElementById("leftbox").style.bottom = "50%";
