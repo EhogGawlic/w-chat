@@ -741,7 +741,11 @@ app.get('/flappy', (req, res) => {
     res.render('flappy')
 })
 app.get('/idk', (req,res)=>{
-    res.send("<iframe src='https://raw.githack.com/Gwacywacy/Cirbeey-Game/refs/heads/main/index.html' style='position:absolute;top:0;left:0;bottom:0;right:0;'></iframe><script>window.onresize=()=>{document.querySelector('iframe').width = innerWidth;document.querySelector('iframe').height = innerHeight;};document.querySelector('iframe').width = innerWidth;document.querySelector('iframe').height = innerHeight;</script>")
+    fetch('https://raw.githubusercontent.com/Gwacywacy/Cirbeey-Game/refs/heads/main/index.html').then(data=>{
+        data.text().then(t=>{
+            res.send(t)
+        })
+    })
 })
 app.post('/upload', upload.single('image'), async (req, res) => {
     // req.file contains info about the uploaded file
