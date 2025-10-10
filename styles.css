@@ -36,8 +36,8 @@ button:hover {
 }
 #post {
     position: fixed;
-    right: 45%;
-    left: 45%;
+    right: 50%;
+    left: 40%;
     bottom: 10px;
     font-size: 50px;
 }
@@ -132,7 +132,7 @@ form button {
     border: 5px solid black;
     border-radius: 20px;
     background-color: lightgray;
-    margin: 2.5px;
+    margin: 0px;
     font-size: 20px;
     width: 30px;
     height: 30px;
@@ -148,6 +148,7 @@ form button {
     bottom: 0;
     width: 50px;
     overflow-y: scroll;
+    border: 1px solid black;
 }
 #messages {
     margin: 0;
@@ -155,6 +156,25 @@ form button {
     top: 0;
     left: 50px;
     right: 0;
-    bottom: 0px;
+    bottom: 50px;
     overflow-y: scroll;
+    border: 1px solid black;
 }
+
+#chatinp { 
+    position: absolute;
+    bottom: 0;
+    left: 50px;
+    right: 0;
+    height: 50px;
+    border-top: 3px solid black;
+    background-color: lightgray;
+}
+#newchatbox{
+    top: 30%;
+    left: 30%;
+    right: 30%;
+    bottom: 30%;
+}
+
+

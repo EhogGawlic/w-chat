@@ -747,6 +747,32 @@ app.get('/idk', (req,res)=>{
         })
     })
 })
+app.get('/request', (req, res) => {
+    res.render('request')
+})
+app.get('/styles.css', (req, res) => {
+    res.set('Content-Type', 'text/css')
+    res.sendFile(__dirname + '/styles.css')
+})
+app.post('/request', async (req, res) => {
+
+    if(!req.cookies.token){
+        res.send("no bad boi<button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    const user = await verifyToken(req.cookies.token)
+    if(!user){
+        res.send("no bad boi<button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    const usr = await getOneData('users', {username: user.username})
+    if(!usr){
+        res.send("no bad boi<button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    await addData('requests', {username: usr.username, email: usr.email, content: req.body.content})
+    res.send("Request sent! <button onclick='window.location=\"/\"'>OK</button>")
+})
 app.post('/upload', upload.single('image'), async (req, res) => {
     // req.file contains info about the uploaded file
     if(!req.cookies.token){
