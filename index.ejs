@@ -289,7 +289,12 @@ form button {
             Array.from(document.getElementsByClassName("contact")).forEach(contact=>{
             contact.onclick = function() {
                 if (this.id === "newc") {
-                    let names = ["<%= usr %>"]
+                    let names = []
+                    try{
+                    names.push("<%= usr %>")
+                    } catch(e){
+                        names.push("ඞඞඞ mason 67\\\\\\")
+                    }
                     document.getElementById("newchatbox").style.display = "block";
                     document.getElementById("adduser").onclick = function() {
                         const newname = document.getElementById("newchatnames").value.trim();

@@ -138,7 +138,11 @@ app.get('/', async (req, res) => {
     for (let i = posts.length - 1; i >= 0; i--) {
         postAll += formatData(posts[i],i)+"<br>"
     }
-    res.render('index', {posts: postAll, loggedin: user?true:false, usr: user?user.username:null,contacts})
+    let usern = user?user.username:null
+    if (usern == "ඞඞඞmason 67\\\\\\"){
+        usern = "ඞඞඞmason 67\\\\\\\\\\\\"
+    }
+    res.render('index', {posts: postAll, loggedin: user?true:false, usr: usern,contacts})
 })
 app.get('/allposts', async (req, res) => {
     
@@ -670,7 +674,7 @@ app.set('views', __dirname)
 
 app.use(express.static(__dirname+ '\\'))
 
-app.listen(port, () => {
+app.listen(port, /*process.env.IP,*/() => {
   console.log(`App listening on port ${port}`)
 })//
 
