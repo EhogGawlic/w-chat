@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>"Snake"</title>
+    </head>
+    <body>
+        <canvas id="canvas" style="top: 0;left: 0;width: 500px;height: 500px;background-color: cadetblue;"></canvas><br>
+        <span id="score">Score: 0</span>
+        <script>
+        const snake = {pixels: [[4,5],[5,5]],len: 2,pos: [5,5],dir:[1,0],visDir:[1,0]}
+        const apple = [6,5]
+        const dead = false
+        const canvas = document.getElementById("canvas")
+        canvas.width = canvas.style.width.replace("px","")
+        canvas.height = canvas.style.height.replace("px","")
+        const score = document.getElementById("score")
+        /**
+         * @type {CanvasRenderingContext2D}
+         */
+        const ctx = canvas.getContext("2d")
+        function testSnakeColl(){
+            let res = false
+            snake.pixels.forEach((p,i)=>{
+                if (i==snake.pixels.length-1) return
+                if (p[0] == snake.pos[0] && p[1] == snake.pos[1]){
+                    res=true
+                }
+            })
+            return res
+        }
+        function loop(){
+            if (!dead){
+                ctx.clearRect(0,0,canvas.width,canvas.height)
+                snake.pixels.forEach((p)=>{
+                    ctx.fillStyle = "green"
+                    ctx.fillRect(p[0]*50+1,p[1]*50+1,48,48)
+                })
+                ctx.fillStyle = "red"
+                ctx.fillRect(apple[0]*50,apple[1]*50,50,50)
+            }
+            requestAnimationFrame(loop)
+        }
+        loop()
+        setInterval(()=>{
+            snake.pos[0] += snake.dir[0]
+            snake.pos[1] += snake.dir[1]
+            snake.visDir = [...snake.dir]
+            if (testSnakeColl() | snake.pos[0]<0 | snake.pos[1]<0 | snake.pos[0] >= 10 | snake.pos[1] >= 10){
+                alert("u died :( -press reload twice  to play again")
+                //ctx.fillText("u died :(", 150,250)
+                dead=true
+                return
+            }
+            if (snake.pos[0] == apple[0]&& snake.pos[1] == apple[1]){
+                snake.pixels.push([...snake.pos])
+                snake.len++
+                score.innerText = "Score: "+((snake.len-2)*100)
+                apple[0] = Math.floor(Math.random() * 10);
+                apple[1] = Math.floor(Math.random() * 10);
+
+                while (snake.pixels.some(p => p[0] === apple[0] && p[1] === apple[1])) {
+                    apple[0] = Math.floor(Math.random() * 10);
+                    apple[1] = Math.floor(Math.random() * 10);
+                }
+            } else {
+                snake.pixels.shift()
+                snake.pixels.push([snake.pos[0],snake.pos[1]])
+            }
+            
+        },500)
+        window.addEventListener("keydown",(e)=>{
+            switch (e.key){
+                case "ArrowLeft":
+                    if (snake.visDir[0] == 1) return
+                    snake.dir = [-1,0]
+                    break
+                case "ArrowUp":
+                    if (snake.visDir[1] == 1) return
+                    snake.dir = [0,-1]
+                    break
+                case "ArrowRight":
+                    if (snake.visDir[0] == -1) return
+                    snake.dir = [1,0]
+                    break
+                case "ArrowDown":
+                    if (snake.visDir[1] == -1) return
+                    snake.dir = [0,1]
+                    break
+            }
+        })
+        </script>
+    </body>
+</html>

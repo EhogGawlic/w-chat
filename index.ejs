@@ -4,192 +4,15 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>W chat</title>
-        <style>*{
-    font-family: 'Comic Sans MS', 'Comic Sans', cursive;
-}
-.box {
-    position: absolute;
-    border: 5px solid black;
-    margin: 0px;
-    border-radius: 10px;
-    background-color: gray;
-}
-#topbox {
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 100px;
-    width: 100%-24px;
-    font-size:70px;
-}
-button {
-    border: 3px solid black;
-    margin: 10px;
-    border-radius: 5px;
-    background-color: lightgray;
-    cursor: pointer;
-}
-button:hover {
-    background-color: rgb(234, 234, 234);
-}
-#topbox button {
-    position: absolute;
-    margin: 10px;
-    top: 0px;
-    height: 80px;
-    width: 200px;
-    font-size: 30px;
-}
-#post {
-    position: fixed;
-    right: 45%;
-    left: 45%;
-    bottom: 10px;
-    font-size: 50px;
-}
-#chatj {
-    right: 220px;
-}
-#si {
-    right: 10px;
-}
-
-#leftbox {
-    top: 120px;
-    bottom: 10px;
-    left: 0;
-    right: 50%;
-    overflow-y: scroll;
-}
-#rightbox {
-    top: 120px;
-    bottom: 10px;
-    right: 0;
-    left: 50%;
-    overflow-y: scroll;
-}
-#middlebox {
-    top: 120px;
-    bottom: 10px;
-    left: 10px;
-    right: 10px;
-    overflow-y: scroll;
-}
-.post {
-    border: 5px solid black;
-    border-radius: 10px;
-    background-color: lightgray;
-    margin: 10px;
-    padding: 10px;
-    font-size: 20px;
-}
-form input {
-    border: 3px solid black;
-    border-radius: 5px;
-    background-color: lightgray;
-    font-size: 20px;
-}
-form button {
-    border: 3px solid black;
-    border-radius: 5px;
-    background-color: lightgray;
-    font-size: 20px;
-    margin: 0;
-    cursor: pointer;
-}
-.red {
-    color: red;
-}
-.hidden {
-    display: none;
-}
-#bigpost {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border: 5px solid black;
-    border-radius: 10px;
-    background-color: lightgray;
-    margin: 10px;
-    padding: 10px;
-    font-size: 20px;
-}
-.tmessage {
-    border: 5px solid black;
-    border-radius: 10px;
-    background-color: rgb(38, 0, 255);
-    margin: 10px;
-    padding: 10px;
-    font-size: 16px;
-    right:0;
-}
-.omessage {
-    border: 5px solid black;
-    border-radius: 10px;
-    background-color: rgb(187, 187, 187);
-    margin: 10px;
-    padding: 10px;
-    font-size: 16px;
-    left:0;
-}
-.contact {
-    border: 5px solid black;
-    border-radius: 20px;
-    background-color: lightgray;
-    margin: 0px;
-    font-size: 20px;
-    width: 30px;
-    height: 30px;
-    text-align: center;
-    
-    cursor: pointer;
-}
-#contacts {
-    margin: 0;
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: 50px;
-    overflow-y: scroll;
-    border: 1px solid black;
-}
-#messages {
-    margin: 0;
-    position: absolute;
-    top: 0;
-    left: 50px;
-    right: 0;
-    bottom: 0px;
-    overflow-y: scroll;
-    border: 1px solid black;
-
-}
-
-#chatinp { 
-    position: absolute;
-    bottom: 0;
-    left: 50px;
-    right: 0;
-    height: 50px;
-    border-top: 3px solid black;
-    background-color: lightgray;
-}
-#newchatbox{
-    top: 30%;
-    left: 30%;
-    right: 30%;
-    bottom: 30%;
-}
-
-
-</style>
+        <link rel="stylesheet" type="text/css" href="/styles.css">
         <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/EhogGawlic/w-chat/refs/heads/main/public/favicon.png">
     </head>
     <body>
-        <div class = "box" id="topbox">W CHAT <button id="chatj" style="height: 80px;">Join chat</button><button id="si" style="height: 80px;">Sign in</button></div>
+        <audio id="btnclick" class="hidden">
+            <source src="https://raw.githubusercontent.com/EhogGawlic/w-chat/refs/heads/main/public/click.mp3" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+        <div class = "box" id="topbox">W CHAT <button onclick="window.location='/games'" style="height: 80px; right:430px;">Games</button><button id="chatj" style="height: 80px;">Join chat</button><button id="si" style="height: 80px;">Sign in</button></div>
         <div class = "box" id="leftbox"> <span id="usr" style="display: none;">Logged in as <%= usr %> <button onclick="window.location = '/user:name=<%= usr %>'">Go to user page</button></span>
             <div id="posts"><%- posts %></div>
         </div>
@@ -200,8 +23,11 @@ form button {
             <div class="box" id="contacts">
                 <%- contacts %>
             </div>
+            <div id="chatdiv" style="position: absolute;top: 0;left: 50px;right: 0;text-align: center;height: 75px;background-color: lightgray;">
+                 <span id="currentchat" style="font-size: 30pxt;">e</span>
+                 <button id="chatedit"><img src="/edit.png" style="position: relative;top: -2.5px;left: -7.5px;"></button>
+            </div>
             <div class="box" id="messages">
-
             </div>
             <div id="chatinp">
                 &nbsp;&nbsp;&nbsp;&nbsp;<input type="text" id="chatinput" multiple placeholder="Type a message...">
@@ -219,6 +45,32 @@ form button {
         </div>
         <script>
             //phone mode
+            Array.from(document.querySelectorAll('button')).forEach(btn => {
+                btn.addEventListener("click", ()=> {
+                    document.getElementById("btnclick").play();
+                })
+            });
+                        chatedit.onclick = function() {
+                const newname = prompt("Enter new chat name (leave blank to keep current):");
+                if (newname === null) return;
+                fetch('/editchatname', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({newname, contact: currentContact})
+                }).then(res => res.text()).then(data => {
+                    if (data.startsWith("Error:")) {
+                        alert(data);
+                        return;
+                    }
+                    localStorage.setItem("currentContact", newname);
+                    alert("Chat name updated to " + newname);
+                    document.getElementById("currentchat").innerText = newname;
+                    location.reload();
+                });
+            }
             if (innerHeight>innerWidth){
                     document.getElementById("leftbox").style.right = "0";
                     document.getElementById("leftbox").style.bottom = "50%";
@@ -257,9 +109,10 @@ form button {
                 const id = url.split('/d/')[1].split('/view')[0];
                 return `https://drive.google.com/thumbnail?id=${id}&sz=w320-h320`;
             }
-            let currentContact = null;
-            setInterval(()=>{
-               /* fetch('/messages', {
+            let currentContact = localStorage.getItem("currentContact") || null;
+            document.getElementById("currentchat").innerText = currentContact ? currentContact : "No chat selected";
+            if (currentContact) {
+                fetch('/messages', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -268,7 +121,38 @@ form button {
                     body: JSON.stringify({contact: currentContact})
                 }).then(res => res.text()).then(data => {
                     document.getElementById("messages").innerHTML = data
-            });*/
+                    setTimeout(()=>{
+                        const messagesDiv = document.getElementById("messages");
+                        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                    }, 2000)
+                });
+            }/*function showChatNotification(title, body) {
+    if (document.hasFocus()) return; // Only notify if not focused
+    if (Notification.permission === "granted") {
+        new Notification(title, { body });
+    }
+}
+
+// Example: Show notification when new messages are fetched
+function fetchMessagesAndNotify() {
+    fetch('/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ contact: currentContact })
+    }).then(res => res.text()).then(data => {
+        // Compare with previous messages if needed
+        if (document.getElementById("messages").innerHTML == data) return
+        document.getElementById("messages").innerHTML = data;
+        // Example: Always notify (customize as needed)
+        showChatNotification("New message", "You have a new message!");
+
+        // Scroll to bottom
+        const messagesDiv = document.getElementById("messages");
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    });*/
+            setInterval(()=>{
+                //fetchMessagesAndNotify()
                 });
                 fetch('/allposts', {
                     method: 'GET',
@@ -338,6 +222,12 @@ form button {
                 }).then(res => res.text()).then(data => {
                     document.getElementById("messages").innerHTML = data
                     currentContact = this.id.slice(7)
+                    localStorage.setItem("currentContact", currentContact);
+                    document.getElementById("currentchat").innerText = currentContact
+                    setTimeout(()=>{
+                        const messagesDiv = document.getElementById("messages");
+                        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                    }, 2000)
                 });
             }});
             document.getElementById("chatsend").onclick = function() {
@@ -382,4 +272,3 @@ form button {
     </body>
 
 </html>
-

@@ -12,7 +12,11 @@ dotenv.config()
 const uri = process.env.PASSWORD;
 const client = new MongoClient(uri);
 const cookieParser = require('cookie-parser')
+const fs = require('fs')
 app.use(cookieParser())
+
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' }); // Images will be saved in 'uploads/' folder
 
 async function initMongo(){
 	try{
@@ -123,7 +127,7 @@ app.get('/', async (req, res) => {
     if (!notice){
         await addData('notices', {title:"Notice",content:"Important stuf will be here"})
     }
-    
+    const users = await getAllData('users')
     notice = await getOneData('notices',{})
     postAll += `<div class="post">${notice.title}<br>${notice.content}</div><br>`
 	if (tusr && tusr.contacts){
@@ -136,6 +140,8 @@ app.get('/', async (req, res) => {
     contacts+='<p class="contact" id="newc">+</p><br></br>'
 	}
     for (let i = posts.length - 1; i >= 0; i--) {
+        posts[i].author.status = users.find(u => u.username == posts[i].author.username).status
+        posts[i].author.dname = users.find(u => u.username == posts[i].author.username).dname
         postAll += formatData(posts[i],i)+"<br>"
     }
     let usern = user?user.username:null
@@ -145,6 +151,7 @@ app.get('/', async (req, res) => {
     res.render('index', {posts: postAll, loggedin: user?true:false, usr: usern,contacts})
 })
 app.get('/allposts', async (req, res) => {
+    const users = await getAllData('users')
     
     let postAll = ``
     const posts = await getAllData('posts')
@@ -152,6 +159,9 @@ app.get('/allposts', async (req, res) => {
     postAll += `<div class="post">${notice.title}<br>${notice.content}</div><br>`
     
     for (let i = posts.length - 1; i >= 0; i--) {
+        posts[i].author.status = users.find(u => u.username == posts[i].author.username).status
+        posts[i].author.dname = users.find(u => u.username == posts[i].author.username).dname
+        
         postAll += formatData(posts[i],i)+"<br>"
     }
     res.send(postAll)
@@ -287,6 +297,9 @@ app.post('/posted', async (req, res) => {
     })
     res.redirect('/')
 })//
+app.get("/game", (req,res)=>{
+    res.send("game<br><iframe src='https://wchatgame.onrender.com/play' style='position:absolute;top:0;left:0;bottom:0;right:0;'></iframe><script>window.onresize=()=>{document.querySelector('iframe').width = innerWidth;document.querySelector('iframe').height = innerHeight;};document.querySelector('iframe').width = innerWidth;document.querySelector('iframe').height = innerHeight;</script>")
+})
 app.post('/delete', async (req, res) => {
     if(!req.cookies.token){
         res.send("no bad boi<button onclick='history.back()'>Go Back</button>")
@@ -316,10 +329,12 @@ app.get('/post:id=:id', async (req, res) => {
         res.send("Wait, how did you find this <button onclick='history.back()'>Go Back</button>")
         return
     }
+    const author = await getOneData('users', {username: post.author.username})
+    console.log(author)
     const data =  `
     <div id="bigpost" id="${id}">
         <h2>${post.title}</h2>
-        <p>by ${post.author.dname} ${post.author.status}</p><br>
+        <p>by <img src="/image:id=${author.pfpid? author.pfpid: 0}" alt="No PFP" width="30" height="30" style="border-radius:50%;">${author.dname} ${author.status}</p><br>
         <p>${post.content}</p>
         <p>${post.replies ? formatReplies(post.replies) : ""}<button onclick="window.location='/reply:post=${id}'">Reply</button></p>
         <form action="/delete" method="post">
@@ -361,6 +376,11 @@ app.get('/user:name=:name', async (req, res) => {
 		    res.render('singlepost', {post: data})
 			return
 		}
+        if (!tuser.pfpid){
+            tuser.pfpid = "0"
+            await updateData("users", {username:tuser.username}, {pfp:tuser.pfp})
+        }
+        console.log(tuser.pfpid)
 		const data =  `
 	    <div id="bigpost">
 	 <form action="/changedname" method="post">
@@ -369,6 +389,13 @@ app.get('/user:name=:name', async (req, res) => {
 	            <input type="text" class="hidden" name="username" value='${user.username}'>
 		 	<button type="submit">Change</button><br>
 		 </form>
+         <br>
+         PFP<br>
+         <form action="/upload" method="post" enctype="multipart/form-data">
+                <input type="file" name="image" accept="image/*">
+                <button type="submit">Upload</button>
+            </form>
+            <img src="/image:id=${tuser.pfpid}" alt="No PFP" width="100" height="100"><br>
 			<h3>${user.username}</h3>
 	        <p>${user.status}</p>
 	        <form action="/ban" method="post">
@@ -502,14 +529,22 @@ app.get('/admin', async (req, res) => {
         res.send("You are not logged in <button onclick='history.back()'>Go Back</button>")
         return
     }
-    if (user.username != "ehogin"){
+    if (user.username != "ehogin" && user.username != "OllieVera"){
         res.send("You are not authorized to view this page <button onclick='history.back()'>Go Back</button>")
     }
-    const users = await getAllData('users')
-    const usrlist = users.map(u => {
-        return `<p><form action='/admin' method='post'>${u.dname} - ${u.email} (<input type="text" value='${u.username}' name="username">) - ${u.status} <button type="submit">Promote</button></form></p>`
-    })
-    res.render('admin', {users: usrlist.join('')})
+    if (user.username == "ehogin"){
+        const users = await getAllData('users')
+        const usrlist = users.map(u => {
+            return `<p><form action='/admin' method='post'>${u.dname} - ${u.email} (<input type="text" value='${u.username}' name="username">) - ${u.status} <button type="submit">Promote</button></form></p>`
+        })
+        res.render('admin', {users: usrlist.join('')})
+        return
+    }
+    if (user.username == "OllieVera"){
+        res.render('admin', {users: "lol u cant ban magnus"})
+        return
+    }
+    res.send("oops i did smth wrong")
 })
 app.get('/admin/ban', async (req, res) => {
     if (!req.cookies.token) {
@@ -552,12 +587,47 @@ app.get('/admin/um', async (req, res) => {
     }
     if (user.username != "ehogin"){
         res.send("You are not authorized to view this page <button onclick='history.back()'>Go Back</button>")
+        return
     }
     const users = await getAllData('users')
     const usrlist = users.map(u => {
         return `<p><form action='/admin/um' method='post'>${u.dname} (<input type="text" value='${u.username}' name="username">) - ${u.status} <button type="submit">un-Promote</button></form></p>`
     })
     res.render('admin', {users: usrlist.join('')})
+})
+app.post('/addimg',async(req,res)=>{
+    if (!req.cookies.token) {
+        res.send("You are not logged in <button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    const token = await verifyToken(req.cookies.token)
+    if (!token) {
+        res.send("Expired login <button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    const tuser = await getOneData('users', {username: token.username})
+    if (!tuser) {
+        res.send("You are not logged in <button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    /** @type{Blob} */
+    const img = req.body.img
+    //img is blob
+    const imgurl = URL.createObjectURL(img)
+    await addData('images', {url: imgurl})
+    const nimg = await getOneData('images', {url: imgurl})
+    res.send(nimg._id)
+})
+app.get('/image:id=:id', async(req,res)=>{
+    const id = req.params.id
+    const img = await getOneData('images', {filename:id})
+    
+    if (!img){
+        res.send(fs.readFileSync('uploads/default.png'))
+        return
+    }
+    res.set('Content-Type', 'image/webp')
+    res.send(img.data.buffer)
 })
 app.post('/admin/notice', async (req, res) => {
     if (!req.cookies.token) {
@@ -668,33 +738,126 @@ app.post('/messages', async (req, res) => {
     })
     res.send(messages)
 });
+app.get('/games', (req, res) => {
+    res.render('games')
+})
+app.get('/flappy', (req, res) => {
+    res.render('flappy')
+})
+app.get('/idk', (req,res)=>{
+    fetch('https://raw.githubusercontent.com/Gwacywacy/Cirbeey-Game/refs/heads/main/index.html').then(data=>{
+        data.text().then(t=>{
+            res.send(t)
+        })
+    })
+})
+app.get('/request', (req, res) => {
+    res.render('request')
+})
+app.get('/styles.css', (req, res) => {
+    res.set('Content-Type', 'text/css')
+    res.sendFile(__dirname + '/styles.css')
+})
+app.get('/edit.png', (req, res) => {
+    res.sendFile(__dirname + '/edit.png')
+})
+app.put('/editchatname', async (req, res) => {
+if(!req.cookies.token){
+        res.send("Error: not logged in")
+        return
+    }
+    const user = await verifyToken(req.cookies.token)
+    if(!user){
+        res.send("Error: not logged in")
+        return
+    }
+    console.log(req.body)
+    const contact = req.body.contact
+    const chat = await getOneData('chats', {name: contact, users: {$in: [user.username]}})
+    
+    if(!chat){
+        console.log(":(")
+        res.send("Error: No chat found")
+        return
+    }
+    const newname = req.body.newname
+    if (!newname || newname.length < 1 || newname.length > 20){
+        res.send("Error: Invalid chat name")
+        return
+    }
+    await updateData('chats', {name: contact, users: {$in: [user.username]}}, {name: newname})
+    Array.from(chat.users).forEach(async u => {
+        const usr = await getOneData('users', {username: u})
+        if (!usr) return
+        if (!usr.contacts) usr.contacts = []
+        const index = usr.contacts.indexOf(contact)
+        if (index > -1) {
+            usr.contacts[index] = newname
+            await updateData('users', {username: usr.username}, {contacts: usr.contacts})
+        }
+    })
+    console.log("changed chat name to "+newname)
+    res.send("Success")
+})
+app.post('/request', async (req, res) => {
+
+    if(!req.cookies.token){
+        res.send("no bad boi<button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    const user = await verifyToken(req.cookies.token)
+    if(!user){
+        res.send("no bad boi<button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    const usr = await getOneData('users', {username: user.username})
+    if(!usr){
+        res.send("no bad boi<button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    await addData('requests', {username: usr.username, email: usr.email, content: req.body.content})
+    res.send("Request sent! <button onclick='window.location=\"/\"'>OK</button>")
+})
+app.post('/upload', upload.single('image'), async (req, res) => {
+    // req.file contains info about the uploaded file
+    if(!req.cookies.token){
+        res.send("no bad boi<button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    const user = await verifyToken(req.cookies.token)
+    if(!user){
+        res.send("no bad boi<button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    const usr = await getOneData('users', {username: user.username})
+    if(!usr){
+        res.send("no bad boi<button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    if (!usr.pfpid){
+        usr.pfpid = "0"
+    }
+
+    if (!req.file) {
+        return res.status(400).send('No file uploaded.');
+    }
+    console.log(req.file);
+    await updateData('users', {username: usr.username}, {pfpid:req.file.filename})
+    const file = fs.readFileSync(req.file.path)
+    await addData('images', {data:file,filename:req.file.filename,mimetype:req.file.mimetype})
+    res.redirect('/user:name='+usr.username)
+    // add blob to database
+    //await addData('images', {data: new Blob([req.file]), filename: req.file.filename, mimetype: req.file.mimetype})
+    //res.send(`File uploaded: ${req.file.filename}. URL: /image:id=`);
+});
+app.get("/snake",(req,res)=>{
+    res.render("snake")
+})
 app.engine('html', require('ejs').renderFile)
 app.set('view engine', 'ejs')
 app.set('views', __dirname)
-
 app.use(express.static(__dirname+ '\\'))
 
 app.listen(port, /*process.env.IP,*/() => {
   console.log(`App listening on port ${port}`)
-})//
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+})
