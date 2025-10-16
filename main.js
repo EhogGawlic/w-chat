@@ -740,6 +740,9 @@ app.get('/games', (req, res) => {
 app.get('/flappy', (req, res) => {
     res.render('flappy')
 })
+app.get('/teetris', (req, res) => {
+    res.render('teetris')
+})
 app.get('/idk', (req,res)=>{
     fetch('https://raw.githubusercontent.com/Gwacywacy/Cirbeey-Game/refs/heads/main/index.html').then(data=>{
         data.text().then(t=>{

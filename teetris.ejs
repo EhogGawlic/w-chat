@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+    </head>
+    <body>
+        <canvas id="canvas">
+
+        </canvas>
+        <script>
+            const pieces = [
+                { shape: [-1,0,0,0,1,0,2,0], color: 'cyan', pos:{x:5,y:10}},
+                { shape: [-1,-1,0,-1,0,0,0,1], color: 'purple', pos:{x:5,y:0} },
+                { shape: [-1,1,0,1,0,0,0,-1], color: 'pink', pos:{x:5,y:10} },
+                { shape: [1,1,0,1,1,0,0,0], color: 'blue', pos:{x:5,y:10} },
+                { shape: [-1,0,0,0,0,1,1,1], color: 'green', pos:{x:5,y:10} },
+                { shape: [1,0,0,0,0,1,-1,1], color: 'red', pos:{x:5,y:10} }
+            ]
+            const pwidth = 20
+            const cwid = 10
+            const chei = 20
+            canvas.width = pwidth * cwid
+            canvas.height = pwidth * chei
+            const ctx = canvas.getContext('2d')
+            const grid = []
+            for(let r = 0; r < chei; r++){
+                grid[r] = []
+                for(let c = 0; c < cwid; c++){
+                    grid[r][c] = null
+                }
+            }
+            const ppieces = []
+            let cp = 0
+                    ppieces.push(JSON.parse(JSON.stringify(pieces[cp % (pieces.length-1)])))
+            function updateAndDrawGrid(){
+                ctx.clearRect(0,0,canvas.width,canvas.height)
+                for(let r = 0; r < chei; r++){
+                    grid[r] = []
+                    for(let c = 0; c < cwid; c++){
+                        grid[r][c] = null
+                    }
+                }
+                let pn = 0
+                ppieces.forEach(p=>{
+                    for (let i = 0; i < p.shape.length; i+=2) {
+                        const x = p.pos.x + p.shape[i]
+                        const y = p.pos.y + p.shape[i+1]
+                        if(y >= 0 && y < chei && x >= 0 && x < cwid){
+                            grid[y][x] = {color:p.color, piece: pn}
+                        }
+                    }
+                    pn++
+                })
+                for(let r = 0; r < chei; r++){
+                    for(let c = 0; c < cwid; c++){
+                        if(grid[r][c]){
+                            ctx.fillStyle = grid[r][c].color
+                            ctx.fillRect(c*pwidth,r*pwidth,pwidth,pwidth)
+                            ctx.strokeRect(c*pwidth,r*pwidth,pwidth,pwidth)
+                        } else {
+                            ctx.strokeStyle = 'lightgrey'
+                            ctx.strokeRect(c*pwidth,r*pwidth,pwidth,pwidth)
+                        }
+                    }
+                }
+            }
+
+            function update(){
+                updateAndDrawGrid()
+                let pn = 0
+                let newpiece = false
+                ppieces.forEach(p=>{
+                    let hit = false
+                    for (let i = 0; i < p.shape.length; i+=2) {
+                        if (hit) continue
+                        const x = p.pos.x + p.shape[i]
+                        const y = p.pos.y + p.shape[i+1] + 1
+                        if (y >= chei || (grid[y] && (grid[y][x] && grid[y][x].piece !== pn))) {
+                            hit = true
+                            
+                        }
+                    }
+                    if (!hit) p.pos.y++
+                        
+                    if (hit && pn == cp){newpiece = true}
+                    pn++
+                })
+                for (let y = 0; y < chei; y++) {
+                    let full = true
+                    for (let x = 0; x < cwid; x++) {
+                        if (!grid[y][x]) full = false
+                    }
+                    if (full) { {
+                        ppieces.forEach(p=>{
+                            for (let i = 0; i < p.shape.length; i+=2) {
+                                if (p.pos.y + p.shape[i+1] < y) {
+                                    delete ppieces[ppieces.indexOf(p)]
+                                }
+                            }
+                        })
+                    }
+                }
+                if (newpiece){
+                cp++
+                    ppieces.push(JSON.parse(JSON.stringify(pieces[cp % (pieces.length-1)])))
+                }
+                updateAndDrawGrid()
+                setTimeout(update,500)
+            }
+            update()
+            function rotate(dir){
+                //true for cw
+                if (dir){
+                    const p = ppieces[cp]
+                    const newShape = []
+                    for (let i = 0; i < p.shape.length; i+=2) {
+                        newShape.push(-p.shape[i+1])
+                        newShape.push(p.shape[i])
+                    }
+                    p.shape = newShape
+                    updateAndDrawGrid()
+                } else {
+                    const p = ppieces[cp]
+                    const newShape = []
+                    for (let i = 0; i < p.shape.length; i+=2) {
+                        newShape.push(p.shape[i+1])
+                        newShape.push(-p.shape[i])
+                    }
+                    p.shape = newShape
+                    updateAndDrawGrid()
+                }
+            }
+            //rotate(false)
+            addEventListener("keydown", (e)=>{
+                switch(e.key){
+                    case 'ArrowLeft':
+                        if (ppieces[cp].pos.x > 0) ppieces[cp].pos.x--
+                        updateAndDrawGrid()
+                        break
+                    case 'ArrowRight':
+                        if (ppieces[cp].pos.x < cwid-1) ppieces[cp].pos.x++
+                        updateAndDrawGrid()
+                        break
+                    case 'r':
+                        rotate(false)
+                        break
+                    case 't':
+                        rotate(true)
+                        break
+                }
+            })
+        </script>
+    </body>
+</html>
