@@ -45,9 +45,9 @@
         </div>
         <div id="bottombar">
             <img src="./btmbar1.png" id="btmbar1">
-            <img src="./btmbar2.png" id="btmbar2">
-            <img src="./btmbar3.png" id="btmbar3">
-            <img src="./btmbar4.png" id="btmbar4">
+            <img src="./btmbar2.png" id="btmbar2" onclick="window.location = '/request'">
+            <img src="./btmbar3.png" id="btmbar3" onclick="window.location = '/three-d-print'">
+            <img src="./btmbar4.png" id="btmbar4" onclick="window.location = '/user:name=<%= usr %>'">
         </div>
         <script>
             //phone mode
@@ -82,14 +82,14 @@
                     document.getElementById("leftbox").style.bottom = "50%";
                     document.getElementById("rightbox").style.left = "0";
                     document.getElementById("rightbox").style.top = "50%";
-                    document.getElementById("rightbox").style.bottom = "50px";
+                    document.getElementById("rightbox").style.bottom = "10px";
                     document.getElementById("rightbox").style.right = "0";
                 } else {
                     document.getElementById("leftbox").style.right = "50%";
                     document.getElementById("leftbox").style.bottom = "10px";
                     document.getElementById("rightbox").style.left = "50%";
                     document.getElementById("rightbox").style.top = "120px";
-                    document.getElementById("rightbox").style.bottom = "10px";
+                    document.getElementById("rightbox").style.bottom = "50px";
                     document.getElementById("rightbox").style.right = "0";
                 }
             window.onresize = function(){

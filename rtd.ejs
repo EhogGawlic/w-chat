@@ -9,9 +9,11 @@
     </head>
     <body>
         <div class="fullbox">
-            <h1>Request a feature</h1>
-            <form action="/request" method="POST">
-                <textarea name="feature" rows="4" cols="50" placeholder="Describe your feature here..." required></textarea><br>
+            <h1>3D print request</h1>
+            <form action="/rtd" method="POST">
+                <textarea name="desc" rows="4" cols="50" placeholder="Describe" required></textarea><br>
+                <label for="model">Upload your 3D model file:</label><br>
+                <input type="file" name="file" accept=".stl,.obj,.3mf" required><br>
                 <button type="submit">Submit</button>
             </form>
             <button onclick="location.href='/'">Go back to home</button>

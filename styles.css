@@ -215,3 +215,11 @@ form button {
 #btmbar4{
     left: calc(80% - 20px);
 }
+.fullbox {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: gray;
+}

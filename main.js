@@ -865,7 +865,61 @@ app.post('/upload', upload.single('image'), async (req, res) => {
     // add blob to database
     //await addData('images', {data: new Blob([req.file]), filename: req.file.filename, mimetype: req.file.mimetype})
     //res.send(`File uploaded: ${req.file.filename}. URL: /image:id=`);
-});
+})
+
+app.post('/uploadother', upload.single('file'), async (req, res) => {
+    // req.file contains info about the uploaded file
+    if(!req.cookies.token){
+        res.send("no bad boi<button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    const user = await verifyToken(req.cookies.token)
+    if(!user){
+        res.send("no bad boi<button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    const usr = await getOneData('users', {username: user.username})
+    if(!usr){
+        res.send("no bad boi<button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    if (!req.file) {
+        return res.status(400).send('No file uploaded.');
+    }
+    console.log(req.file);
+    const file = fs.readFileSync(req.file.path)
+    await addData('uploads', {data:file,filename:req.file.filename,mimetype:req.file.mimetype})
+    res.send(req.file.filename)
+})
+app.get('/three-d-print', (req,res)=>{
+    res.render('rtd')
+})
+app.post('/rtd', upload.single('file'), async (req, res) => {
+    // req.file contains info about the uploaded file
+    if(!req.cookies.token){
+        res.send("no bad boi<button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    const user = await verifyToken(req.cookies.token)
+    if(!user){
+        res.send("no bad boi<button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    const usr = await getOneData('users', {username: user.username})
+    if(!usr){
+        res.send("no bad boi<button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    if (!req.file) {
+        // No file received from multer. Likely cause: form not sent as multipart/form-data or wrong input name.
+        return res.status(400).send('No file uploaded. Ensure the form has enctype="multipart/form-data" and the file input name is "file".');
+    }
+    console.log(req.file);
+    const file = fs.readFileSync(req.file.path)
+    await addData('uploads', {data:file,filename:req.file.filename,mimetype:req.file.mimetype})
+    await addData('rtds', {username: usr.username, filename: req.file.filename, description: req.body.description})
+    res.send("yay <button onclick='location.href=\"/\"'>OK</button>")
+})
 app.get("/snake",(req,res)=>{
     res.render("snake")
 })
