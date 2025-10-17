@@ -741,6 +741,7 @@ app.post('/messages', async (req, res) => {
 app.get('/games', (req, res) => {
     res.render('games')
 })
+
 app.get('/flappy', (req, res) => {
     res.render('flappy')
 })
@@ -763,6 +764,18 @@ app.get('/styles.css', (req, res) => {
 })
 app.get('/edit.png', (req, res) => {
     res.sendFile(__dirname + '/edit.png')
+})
+app.get('/btmbar1.png', (req, res) => {
+    res.sendFile(__dirname + '/btmbar1.png')
+})
+app.get('/btmbar2.png', (req, res) => {
+    res.sendFile(__dirname + '/btmbar2.png')
+})
+app.get('/btmbar3.png', (req, res) => {
+    res.sendFile(__dirname + '/btmbar3.png')
+})
+app.get('/btmbar4.png', (req, res) => {
+    res.sendFile(__dirname + '/btmbar4.png')
 })
 app.put('/editchatname', async (req, res) => {
 if(!req.cookies.token){

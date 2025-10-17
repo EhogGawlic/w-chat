@@ -7,16 +7,16 @@
     </head>
     <body>
         <canvas id="canvas">
-
         </canvas>
+        <canvas id="nextpiece"></canvas>
         <script>
             const pieces = [
-                { shape: [-1,0,0,0,1,0,2,0], color: 'cyan', pos:{x:5,y:0},center: {x:5,y:0}},
-                { shape: [-1,-1,0,-1,0,0,0,1], color: 'purple', pos:{x:5,y:0},center: {x:5,y:0}},
-                { shape: [-1,1,0,1,0,0,0,-1], color: 'pink', pos:{x:5,y:0},center: {x:5,y:0}},
-                { shape: [1,1,0,1,1,0,0,0], color: 'blue', pos:{x:5,y:0},center: {x:5,y:0}},
-                { shape: [-1,0,0,0,0,1,1,1], color: 'green', pos:{x:5,y:0},center: {x:5,y:0}},
-                { shape: [1,0,0,0,0,1,-1,1], color: 'red', pos:{x:5,y:0},center: {x:5,y:0}}
+                { shape: [-1,0,0,0,1,0,2,0], color: 'cyan', pos:{x:5,y:-5}},
+                { shape: [-1,-1,0,-1,0,0,0,1], color: 'purple', pos:{x:5,y:-5}},
+                { shape: [-1,1,0,1,0,0,0,-1], color: 'pink', pos:{x:5,y:-5}},
+                { shape: [1,1,0,1,1,0,0,0], color: 'blue', pos:{x:5,y:-5}},
+                { shape: [-1,0,0,0,0,1,1,1], color: 'green', pos:{x:5,y:-5}},
+                { shape: [1,0,0,0,0,1,-1,1], color: 'red', pos:{x:5,y:-5}}
             ]
             const pwidth = 20
             const cwid = 10
@@ -67,40 +67,41 @@
                 }
             }
             function splitPieceIfNeeded(pi){
-                const p = ppieces[pi];
-                const blocks = [];
-                for (let i = 0; i < p.shape.length; i += 2) {
-                    blocks.push({ x: p.pos.x + p.shape[i], y: p.pos.y + p.shape[i + 1] });
-                }
-                const visited = new Set();
-                const groups = [];
-                function dfs(block, group) {
-                    const key = `${block.x},${block.y}`;
-                    if (visited.has(key)) return;
-                    visited.add(key);
-                    group.push(block);
-                    const directions = [
-                        { x: 1, y: 0 },
-                        { x: -1, y: 0 },
-                        { x: 0, y: 1 },
-                        { x: 0, y: -1 }
-                    ];
-                    for (const dir of directions) {
-                        const neighbor = { x: block.x + dir.x, y: block.y + dir.y };
-                        if (blocks.some(b => b.x === neighbor.x && b.y === neighbor.y)) {
-                            dfs(neighbor, group);
+                try{
+                    const p = ppieces[pi];
+                    const blocks = [];
+                    for (let i = 0; i < p.shape.length; i += 2) {
+                        blocks.push({ x: p.pos.x + p.shape[i], y: p.pos.y + p.shape[i + 1] });
+                    }
+                    const visited = new Set();
+                    const groups = [];
+                    function dfs(block, group) {
+                        const key = `${block.x},${block.y}`;
+                        if (visited.has(key)) return;
+                        visited.add(key);
+                        group.push(block);
+                        const directions = [
+                            { x: 1, y: 0 },
+                            { x: -1, y: 0 },
+                            { x: 0, y: 1 },
+                            { x: 0, y: -1 }
+                        ];
+                        for (const dir of directions) {
+                            const neighbor = { x: block.x + dir.x, y: block.y + dir.y };
+                            if (blocks.some(b => b.x === neighbor.x && b.y === neighbor.y)) {
+                                dfs(neighbor, group);
+                            }
                         }
                     }
-                }
-                for (const block of blocks) {
-                    const key = `${block.x},${block.y}`;
-                    if (!visited.has(key)) {
-                        const group = [];
-                        dfs(block, group);
-                        groups.push(group);
+                    for (const block of blocks) {
+                        const key = `${block.x},${block.y}`;
+                        if (!visited.has(key)) {
+                            const group = [];
+                            dfs(block, group);
+                            groups.push(group);
+                        }
                     }
-                }
-                if (groups.length > 1) {
+                    if (groups.length > 1) {
                     ppieces.splice(pi, 1);
                     for (const group of groups) {
                         const newShape = [];
@@ -118,6 +119,7 @@
                         });
                     }
                 }
+                }catch(e){alert(e)}
             }
             function update(){
                 updateAndDrawGrid()
@@ -136,7 +138,7 @@
                     if (!hit){
                         p.pos.y++
                     }
-                    if (hit && pn == cp && p.pos.y >= 5){newpiece = true}
+                    if (hit && pn == cp && ppieces[cp].pos.y >= 5){newpiece = true}
                     pn++
                 })
                 for (let y = 0; y < chei; y++) {
@@ -211,6 +213,8 @@
                     case 't':
                         rotate(true)
                         break
+                    case 'ArrowDown':
+                        //update()
                 }
             })
         </script>
