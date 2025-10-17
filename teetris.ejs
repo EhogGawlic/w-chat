@@ -11,12 +11,12 @@
         </canvas>
         <script>
             const pieces = [
-                { shape: [-1,0,0,0,1,0,2,0], color: 'cyan', pos:{x:5,y:10}},
-                { shape: [-1,-1,0,-1,0,0,0,1], color: 'purple', pos:{x:5,y:0} },
-                { shape: [-1,1,0,1,0,0,0,-1], color: 'pink', pos:{x:5,y:10} },
-                { shape: [1,1,0,1,1,0,0,0], color: 'blue', pos:{x:5,y:10} },
-                { shape: [-1,0,0,0,0,1,1,1], color: 'green', pos:{x:5,y:10} },
-                { shape: [1,0,0,0,0,1,-1,1], color: 'red', pos:{x:5,y:10} }
+                { shape: [-1,0,0,0,1,0,2,0], color: 'cyan', pos:{x:5,y:0},center: {x:5,y:0}},
+                { shape: [-1,-1,0,-1,0,0,0,1], color: 'purple', pos:{x:5,y:0},center: {x:5,y:0}},
+                { shape: [-1,1,0,1,0,0,0,-1], color: 'pink', pos:{x:5,y:0},center: {x:5,y:0}},
+                { shape: [1,1,0,1,1,0,0,0], color: 'blue', pos:{x:5,y:0},center: {x:5,y:0}},
+                { shape: [-1,0,0,0,0,1,1,1], color: 'green', pos:{x:5,y:0},center: {x:5,y:0}},
+                { shape: [1,0,0,0,0,1,-1,1], color: 'red', pos:{x:5,y:0},center: {x:5,y:0}}
             ]
             const pwidth = 20
             const cwid = 10
@@ -66,7 +66,59 @@
                     }
                 }
             }
-
+            function splitPieceIfNeeded(pi){
+                const p = ppieces[pi];
+                const blocks = [];
+                for (let i = 0; i < p.shape.length; i += 2) {
+                    blocks.push({ x: p.pos.x + p.shape[i], y: p.pos.y + p.shape[i + 1] });
+                }
+                const visited = new Set();
+                const groups = [];
+                function dfs(block, group) {
+                    const key = `${block.x},${block.y}`;
+                    if (visited.has(key)) return;
+                    visited.add(key);
+                    group.push(block);
+                    const directions = [
+                        { x: 1, y: 0 },
+                        { x: -1, y: 0 },
+                        { x: 0, y: 1 },
+                        { x: 0, y: -1 }
+                    ];
+                    for (const dir of directions) {
+                        const neighbor = { x: block.x + dir.x, y: block.y + dir.y };
+                        if (blocks.some(b => b.x === neighbor.x && b.y === neighbor.y)) {
+                            dfs(neighbor, group);
+                        }
+                    }
+                }
+                for (const block of blocks) {
+                    const key = `${block.x},${block.y}`;
+                    if (!visited.has(key)) {
+                        const group = [];
+                        dfs(block, group);
+                        groups.push(group);
+                    }
+                }
+                if (groups.length > 1) {
+                    ppieces.splice(pi, 1);
+                    for (const group of groups) {
+                        const newShape = [];
+                        const baseX = group[0].x - p.pos.x;
+                        const baseY = group[0].y - p.pos.y;
+                        for (const block of group) {
+                            newShape.push(block.x - p.pos.x);
+                            newShape.push(block.y - p.pos.y);
+                        }
+                        ppieces.push({
+                            shape: newShape,
+                            color: p.color,
+                            pos: { x: p.pos.x, y: p.pos.y },
+                            center: { x: p.center.x, y: p.center.y }
+                        });
+                    }
+                }
+            }
             function update(){
                 updateAndDrawGrid()
                 let pn = 0
@@ -74,7 +126,6 @@
                 ppieces.forEach(p=>{
                     let hit = false
                     for (let i = 0; i < p.shape.length; i+=2) {
-                        if (hit) continue
                         const x = p.pos.x + p.shape[i]
                         const y = p.pos.y + p.shape[i+1] + 1
                         if (y >= chei || (grid[y] && (grid[y][x] && grid[y][x].piece !== pn))) {
@@ -82,9 +133,10 @@
                             
                         }
                     }
-                    if (!hit) p.pos.y++
-                        
-                    if (hit && pn == cp){newpiece = true}
+                    if (!hit){
+                        p.pos.y++
+                    }
+                    if (hit && pn == cp && p.pos.y >= 5){newpiece = true}
                     pn++
                 })
                 for (let y = 0; y < chei; y++) {
@@ -92,14 +144,23 @@
                     for (let x = 0; x < cwid; x++) {
                         if (!grid[y][x]) full = false
                     }
-                    if (full) { {
-                        ppieces.forEach(p=>{
-                            for (let i = 0; i < p.shape.length; i+=2) {
-                                if (p.pos.y + p.shape[i+1] < y) {
-                                    delete ppieces[ppieces.indexOf(p)]
+                    if (full) {
+                        // iterate original pieces only (avoid processing newly created pieces this pass)
+                        const originalCount = ppieces.length;
+                        for (let pi = 0; pi < originalCount; pi++) {
+                            const p = ppieces[pi];
+                            let deleteqery = []
+                            for (let i = 0; i < p.shape.length; i += 2) {
+                                if (p.pos.y + p.shape[i + 1] == y) {
+                                    deleteqery.push(i)
                                 }
                             }
-                        })
+                            for (let i = deleteqery.length - 1; i >= 0; i--) {
+                                p.shape.splice(deleteqery[i], 2)
+                            }
+                            // if we've removed blocks, check whether the piece split
+                            splitPieceIfNeeded(pi)
+                        }
                     }
                 }
                 if (newpiece){
@@ -107,7 +168,7 @@
                     ppieces.push(JSON.parse(JSON.stringify(pieces[cp % (pieces.length-1)])))
                 }
                 updateAndDrawGrid()
-                setTimeout(update,500)
+                setTimeout(update,250)
             }
             update()
             function rotate(dir){
@@ -123,6 +184,7 @@
                     updateAndDrawGrid()
                 } else {
                     const p = ppieces[cp]
+
                     const newShape = []
                     for (let i = 0; i < p.shape.length; i+=2) {
                         newShape.push(p.shape[i+1])
