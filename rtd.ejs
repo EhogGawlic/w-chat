@@ -10,7 +10,7 @@
     <body>
         <div class="fullbox">
             <h1>3D print request</h1>
-            <form action="/rtd" method="POST">
+            <form action="/rtd" method="POST"  enctype="multipart/form-data">
                 <textarea name="desc" rows="4" cols="50" placeholder="Describe" required></textarea><br>
                 <label for="model">Upload your 3D model file:</label><br>
                 <input type="file" name="file" accept=".stl,.obj,.3mf" required><br>
