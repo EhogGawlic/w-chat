@@ -16,6 +16,7 @@ const fs = require('fs')
 app.use(cookieParser())
 
 const multer = require('multer');
+const { runInNewContext } = require('vm')
 const upload = multer({ dest: 'uploads/' }); // Images will be saved in 'uploads/' folder
 
 async function initMongo(){
@@ -540,7 +541,7 @@ app.get('/admin', async (req, res) => {
         const rtds = await getAllData('rtds')
 
         const rtdlist = rtds.map(u => {
-            return `<p>${u.description}</p>`
+            return `<div class='post'><p>By ${u.username}: ${u.description}<br>Filename/id: ${u.filename}</p><br><img src="./otay.png" style="cursor:pointer; width:50px;" onclick="otay('${u.filename}')"></div>`
         })
         console.log(rtdlist,"dcabxhcsd")
         res.render('admin', {users: usrlist.join(''),rtds:rtdlist.join('<br>')})
@@ -551,6 +552,29 @@ app.get('/admin', async (req, res) => {
         return
     }
     res.send("oops i did smth wrong")
+})
+app.delete('/rtd', async(req,res)=>{if (!req.cookies.token) {
+        res.send("Error: You are not logged in <button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    const token = await verifyToken(req.cookies.token)
+    if (!token) {
+        res.send("Error: Expired login <button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    const user = await getOneData('users', {username: token.username})
+    if (!user) {
+        res.send("Error: You are not logged in <button onclick='history.back()'>Go Back</button>")
+        return
+    }
+    if (user.username != "ehogin" && user.username != "OllieVera"){
+        res.send("Error: You are not authorized to view this page <button onclick='history.back()'>Go Back</button>")
+    }
+    await deleteData('rtds',{filename:req.body.filename})
+    res.send('yey')
+})
+app.get('/otay.png', (req,res)=>{
+    res.sendFile(__dirname+'/otay.png')
 })
 app.get('/admin/ban', async (req, res) => {
     if (!req.cookies.token) {
