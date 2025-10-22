@@ -537,7 +537,13 @@ app.get('/admin', async (req, res) => {
         const usrlist = users.map(u => {
             return `<p><form action='/admin' method='post'>${u.dname} - ${u.email} (<input type="text" value='${u.username}' name="username">) - ${u.status} <button type="submit">Promote</button></form></p>`
         })
-        res.render('admin', {users: usrlist.join('')})
+        const rtds = await getAllData('rtds')
+
+        const rtdlist = rtds.map(u => {
+            return `<p>${u.description}</p>`
+        })
+        console.log(rtdlist,"dcabxhcsd")
+        res.render('admin', {users: usrlist.join(''),rtds:rtdlist.join('<br>')})
         return
     }
     if (user.username == "OllieVera"){
@@ -916,8 +922,9 @@ app.post('/rtd', upload.single('file'), async (req, res) => {
     }
     console.log(req.file);
     const file = fs.readFileSync(req.file.path)
+    console.log("here:",{username: usr.username, filename: req.file.filename, description: req.body.description})
     await addData('uploads', {data:file,filename:req.file.filename,mimetype:req.file.mimetype})
-    await addData('rtds', {username: usr.username, filename: req.file.filename, description: req.body.description})
+    await addData('rtds', {username: usr.username, filename: req.file.filename, description: req.body.desc})
     res.send("yay <button onclick='location.href=\"/\"'>OK</button>")
 })
 app.get("/snake",(req,res)=>{
