@@ -189,7 +189,6 @@ form button {
             credentials: 'include',
             body: JSON.stringify({ filename })
         }).then(res =>res.text()).then(data => {
-            alert(data)
             if (data.startsWith("Error: ")){
                 alert(data)
                 return
