@@ -174,10 +174,29 @@ form button {
             body: JSON.stringify({ filename })
         }).then(res => res.text()).then(data => {
             if (data.startsWith("Error: ")){
+                alert(data)
                 return
             }
             location.reload()
         })
+    }
+
+    function download(filename){
+        try{
+        fetch('/download', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ filename })
+        }).then(res =>res.text()).then(data => {
+            alert(data)
+            if (data.startsWith("Error: ")){
+                alert(data)
+                return
+            }
+            location.href= data
+        })
+    }catch(e){alert(e)}
     }
 </script>
 </head>

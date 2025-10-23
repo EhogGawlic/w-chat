@@ -339,7 +339,7 @@ app.get('/post:id=:id', async (req, res) => {
         <p>${post.content}</p>
         <p>${post.replies ? formatReplies(post.replies) : ""}<button onclick="window.location='/reply:post=${id}'">Reply</button></p>
         <form action="/delete" method="post">
-            <input type="number" class="hidden" name="i" value="${id}">
+            <input type="number class="hidden" name="i" value="${id}">
             <button type="submit">Delete post (only if this is your post or you're a moderator)</button>
         </form>
     </div>
@@ -541,7 +541,7 @@ app.get('/admin', async (req, res) => {
         const rtds = await getAllData('rtds')
 
         const rtdlist = rtds.map(u => {
-            return `<div class='post'><p>By ${u.username}: ${u.description}<br>Filename/id: ${u.filename}</p><br><img src="./otay.png" style="cursor:pointer; width:50px;" onclick="otay('${u.filename}')"></div>`
+            return `<div class='post'><p>By ${u.username}: ${u.description}<br>Filename/id: ${u.filename} and type: prob stl</p><br><img src="./download.png" style="cursor:pointer; width:50px;" onclick="download('${u.filename}')"><img src="./otay.png" style="cursor:pointer; width:50px;" onclick="otay('${u.filename}')"></div>`
         })
         console.log(rtdlist,"dcabxhcsd")
         res.render('admin', {users: usrlist.join(''),rtds:rtdlist.join('<br>')})
@@ -573,8 +573,21 @@ app.delete('/rtd', async(req,res)=>{if (!req.cookies.token) {
     await deleteData('rtds',{filename:req.body.filename})
     res.send('yey')
 })
+app.post('/download', async(req,res)=>{
+    try{
+    const file = await getOneData('uploads',{filename:req.body.filename})
+    if (!file){
+        res.send("Error: no file")
+    }
+    const base64 = file.data.toString('base64');
+    res.send('data:application/octet-stream;base64,'+base64)
+}catch(e){res.send("Error: "+e)}
+})
 app.get('/otay.png', (req,res)=>{
     res.sendFile(__dirname+'/otay.png')
+})
+app.get('/download.png', (req,res)=>{
+    res.sendFile(__dirname+'/download.png')
 })
 app.get('/admin/ban', async (req, res) => {
     if (!req.cookies.token) {
