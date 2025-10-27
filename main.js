@@ -539,9 +539,12 @@ app.get('/admin', async (req, res) => {
             return `<p><form action='/admin' method='post'>${u.dname} - ${u.email} (<input type="text" value='${u.username}' name="username">) - ${u.status} <button type="submit">Promote</button></form></p>`
         })
         const rtds = await getAllData('rtds')
-
+        const freqs = await getAllData('requests')
         const rtdlist = rtds.map(u => {
             return `<div class='post'><p>By ${u.username}: ${u.description}<br>Filename/id: ${u.filename} and type: prob stl</p><br><img src="./download.png" style="cursor:pointer; width:50px;" onclick="download('${u.filename}')"><img src="./otay.png" style="cursor:pointer; width:50px;" onclick="otay('${u.filename}')"></div>`
+        })
+        freqs.forEach(f=>{
+            rtdlist.push(JSON.stringify(f))
         })
         console.log(rtdlist,"dcabxhcsd")
         res.render('admin', {users: usrlist.join(''),rtds:rtdlist.join('<br>')})
